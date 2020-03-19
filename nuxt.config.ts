@@ -54,16 +54,6 @@ const config: Configuration = {
         content: 'summary_large_image'
       },
       {
-        hid: 'twitter:site',
-        name: 'twitter:site',
-        content: '@tokyo_bousai'
-      },
-      {
-        hid: 'twitter:creator',
-        name: 'twitter:creator',
-        content: '@tokyo_bousai'
-      },
-      {
         hid: 'twitter:image',
         name: 'twitter:image',
         content: 'https://covid19-osaka.info/ogp.png'
