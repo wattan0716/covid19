@@ -95,7 +95,7 @@
     </TextCard>
     <TextCard title="ソースコードについて">
       本サイトのソースコードはMITライセンスで公開されており、誰でも自由に利用することができます。詳しくは、<a
-        href="https://github.com/tokyo-metropolitan-gov/covid19"
+        href="https://github.com/codeforosaka/covid19"
         target="_blank"
         rel="noopener"
         >GitHub リポジトリ</a
