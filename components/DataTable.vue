@@ -13,6 +13,10 @@
       :mobile-breakpoint="0"
       class="cardTable"
     />
+    <div class="note">
+      ※退院とは新型コロナウイルス感染症が治癒した者<br />
+      ※退院には死亡退院を含む
+    </div>
     <template v-slot:infoPanel>
       <data-view-basic-info-panel
         :l-text="info.lText"
