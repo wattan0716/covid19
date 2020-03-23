@@ -130,12 +130,16 @@ export default {
             label: tooltipItem => {
               const labelText =
                 this.dataKind === 'transition'
-                  ? `${sumArray[tooltipItem.index]}${unit}（府内: ${
+                  ? `${sumArray[tooltipItem.index]}${unit}（府管轄保健所: ${
                       data[0][tooltipItem.index]
-                    }/その他: ${data[1][tooltipItem.index]}）`
-                  : `${cumulativeSumArray[tooltipItem.index]}${unit}（府内: ${
+                    }/政令中核市保健所: ${data[1][tooltipItem.index]}）`
+                  : `${
+                      cumulativeSumArray[tooltipItem.index]
+                    }${unit}（府管轄保健所: ${
                       cumulativeData[0][tooltipItem.index]
-                    }/その他: ${cumulativeData[1][tooltipItem.index]}）`
+                    }/政令中核市保健所: ${
+                      cumulativeData[1][tooltipItem.index]
+                    }）`
               return labelText
             },
             title(tooltipItem, data) {

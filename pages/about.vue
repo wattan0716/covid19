@@ -105,18 +105,26 @@
     </TextCard>
 
     <TextCard title="お問い合わせ先">
+      <li>
+        「<a
+          href="http://www.pref.osaka.lg.jp/iryo/osakakansensho/corona-denwa.html"
+          target="_blank"
+          rel="noopener"
+          >新型コロナウイルス感染症の発生に伴う電話相談窓口について</a
+        >」
+      </li>
       大阪府では、府民からの健康相談に応えるため、専用の府民相談窓口を設置しています。<br />
-      また、新型コロナウイルス感染症に感染が疑われる方を対象に、府内各保健所に、新型コロナ受診相談センター（帰国者・接触者相談センター）を設置しています。<br />
-      詳しくは、「<a
-        href="http://www.pref.osaka.lg.jp/iryo/osakakansensho/corona-denwa.html"
-        target="_blank"
-        rel="noopener"
-        >新型コロナウイルス感染症の発生に伴う電話相談窓口について</a
-      >」をご参照ください。<br />
-      <br />
+      また、新型コロナウイルス感染症に感染が疑われる方を対象に、府内各保健所に、新型コロナ受診相談センター（帰国者・接触者相談センター）を設置しています。詳しくは上記リンクより案内をご覧下さい。
+      <br /><br />
+      <li>
+        「<a
+          href="http://www.pref.osaka.lg.jp/it-suishin/sc/index.html#3"
+          target="_blank"
+          rel="noopener"
+          >本サイトの構築に関するお問い合わせについて</a
+        >」
+      </li>
       本サイトの構築に関することについては、大阪府総務部スマートシティ戦略準備室にお問い合わせください。<br />
-      &nbsp;&nbsp;電話&nbsp;&nbsp;
-      <a href="tel:06-6944-6826">06-6944-6826</a>
     </TextCard>
   </div>
 </template>

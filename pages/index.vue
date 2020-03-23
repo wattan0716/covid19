@@ -128,9 +128,9 @@ export default {
     // 新型コロナ受診相談センターへの相談件数
     const contacts2Graph = [
       Data.contacts2_summary.data['府管轄保健所'],
-      Data.contacts2_summary.data['政令中核市']
+      Data.contacts2_summary.data['政令中核市保健所']
     ]
-    const contacts2Items = ['府管轄保健所', '政令中核市']
+    const contacts2Items = ['府管轄保健所', '政令中核市保健所']
     const contacts2Labels = Data.contacts2_summary.labels
     // 治療終了者数
     const treatedGraph = formatGraph(Data.treated_summary.data)

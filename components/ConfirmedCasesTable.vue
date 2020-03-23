@@ -105,7 +105,7 @@
       :dx="getAdjustX(検査実施人数)"
     >
       <tspan>{{ 検査実施人数 }}</tspan>
-      <tspan class="unit" dx="-3">人</tspan>
+      <tspan class="unit" dx="-3">件</tspan>
     </text>
     <mask id="path-10-inside-2" fill="white">
       <path

@@ -80,7 +80,8 @@
     "Message from Governor": "知事からのメッセージ",
     "Official Twitter": "大阪府公式Twitter",
     "Official Facebook": "大阪府公式Facebook",
-    "Official LINE": "大阪府公式LINE"
+    "Official LINE": "大阪府公式LINE",
+    "Bousai Twitter": "おおさか防災ネットTwitter"
   }
 }
 </i18n>
@@ -146,7 +147,11 @@ export default {
         },
         {
           title: this.$t('Official LINE'),
-          link: 'https://lin.ee/8IJ5WMv',
+          link: 'https://lin.ee/8IJ5WMv'
+        },
+        {
+          title: this.$t('Bousai Twitter'),
+          link: 'https://twitter.com/osaka_bousai',
           divider: true
         }
       ]
