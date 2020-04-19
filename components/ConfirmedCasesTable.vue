@@ -102,6 +102,7 @@
     <text
       class="black text"
       transform="translate(12 100)"
+      style="font-size: 12px;"
       :dx="getAdjustX(検査実施人数)"
     >
       <tspan>{{ 検査実施人数 }}</tspan>
@@ -239,6 +240,9 @@ export default {
         }
         case 4: {
           return -8
+        }
+        case 5: {
+          return -11
         }
         default: {
           return 0
