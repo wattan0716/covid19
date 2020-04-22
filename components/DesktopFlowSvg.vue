@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 <template>
   <svg viewBox="0 0 1046 1256" xmlns="http://www.w3.org/2000/svg">
     <defs>

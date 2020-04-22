@@ -15,14 +15,14 @@
       :custom-sort="customSort"
     />
     <div class="note">
-      ※退院とは新型コロナウイルス感染症が治癒した者<br />
-      ※退院には死亡退院を含む
+      {{ $t('※退院とは新型コロナウイルス感染症が治癒した者') }}<br />
+      {{ $t('※退院には死亡退院を含む') }}
     </div>
     <template v-slot:infoPanel>
       <data-view-basic-info-panel
         :l-text="info.lText"
         :s-text="info.sText"
-        :unit="info.unit"
+        :unit="$t('人')"
       />
     </template>
   </data-view>
@@ -127,28 +127,41 @@ export default {
       return items
     },
     createSortAgeData(items, index, isDescending) {
-      const excludeItems = []
-      items.sort((a, b) => {
+      const excludeItems = {}
+      const translatedAges = excludeAges.map(v => this.$t(v))
+
+      const filterItems = items.filter(item => {
+        if (translatedAges.includes(item[index])) {
+          excludeItems[item[index]] = excludeItems[item[index]] || []
+          excludeItems[item[index]].push(item)
+          return false
+        } else {
+          return true
+        }
+      })
+
+      filterItems.sort((a, b) => {
         if (b[index] < a[index]) {
           return 1
         } else {
           return -1
         }
       })
-      const filterItems = items.filter(item => {
-        if (excludeAges.includes(item[index])) {
-          excludeItems.push(item)
-          return false
-        } else {
-          return true
+
+      translatedAges.forEach(v => {
+        if (!excludeItems[v]) {
+          return
         }
+
+        excludeItems[v].forEach(item => {
+          filterItems.unshift(item)
+        })
       })
-      excludeItems.forEach(item => {
-        filterItems.unshift(item)
-      })
+
       if (isDescending) {
         filterItems.reverse()
       }
+
       return filterItems
     }
   }

@@ -9,23 +9,35 @@
       :options="options"
       :height="240"
     />
+    <div class="note">
+      {{ $t('※報道提供における本日判明数での集計') }}
+    </div>
     <template v-slot:infoPanel>
-      <data-view-basic-info-panel
+      <data-view-basic-info-panel1
         :l-text="displayInfo.lText"
-        :s-text="displayInfo.sText"
+        :s-text1="displayInfo.sText1"
+        :s-text2="displayInfo.sText2"
         :unit="displayInfo.unit"
       />
     </template>
   </data-view>
 </template>
 
+<style>
+.note {
+  padding: 8px;
+  font-size: 12px;
+  color: #808080;
+}
+</style>
+
 <script>
 import DataView from '@/components/DataView.vue'
 import DataSelector from '@/components/DataSelector.vue'
-import DataViewBasicInfoPanel from '@/components/DataViewBasicInfoPanel.vue'
+import DataViewBasicInfoPanel1 from '@/components/DataViewBasicInfoPanel1.vue'
 
 export default {
-  components: { DataView, DataSelector, DataViewBasicInfoPanel },
+  components: { DataView, DataSelector, DataViewBasicInfoPanel1 },
   props: {
     title: {
       type: String,
@@ -40,7 +52,7 @@ export default {
     chartId: {
       type: String,
       required: false,
-      default: 'time-stacked-bar-chart'
+      default: 'time-stacked-bar-chart-2'
     },
     chartData: {
       type: Array,
@@ -76,18 +88,46 @@ export default {
   computed: {
     displayInfo() {
       if (this.dataKind === 'transition') {
+        const lastArray = this.pickLastNumber(this.chartData)
+        const lastlastArray = this.pickLastLastNumber(this.chartData)
+        const lastNum = lastArray[0]
+        const lastRatio = this.formatDayBeforeRatio(
+          lastArray[0] - lastlastArray[0]
+        )
+        const lastPercent =
+          Math.floor((lastNum / this.sum(lastArray)) * 100 * 10 ** 2) / 10 ** 2
+
         return {
-          lText: this.sum(this.pickLastNumber(this.chartData)).toLocaleString(),
-          sText: `${this.$t('{date} の合計', {
-            date: this.labels[this.labels.length - 1]
+          lText: lastNum.toLocaleString(),
+          sText1: `${this.$t('リンク不明率：{rate} %', {
+            rate: lastPercent.toLocaleString()
+          })}`,
+          sText2: `${this.$t('前日比：{dif}', {
+            dif: lastRatio
           })}`,
           unit: this.unit
         }
       }
+      const lastSumArray = this.cumulativeSum(this.chartData)
+      const lastSumNum = lastSumArray[0]
+      const lastSumPercent =
+        Math.floor((lastSumNum / this.sum(lastSumArray)) * 100 * 10 ** 2) /
+        10 ** 2
+      const cumulativeData = this.chartData.map(item => {
+        return this.cumulative(item)
+      })
+      const lastSumRatio = this.formatDayBeforeRatio(
+        cumulativeData[0][cumulativeData[0].length - 1] -
+          cumulativeData[0][cumulativeData[0].length - 2]
+      )
+
       return {
-        lText: this.sum(this.cumulativeSum(this.chartData)).toLocaleString(),
-        sText: `${this.$t('{date} の全体累計', {
-          date: this.labels[this.labels.length - 1]
+        lText: lastSumNum.toLocaleString(),
+        sText1: `${this.$t('リンク不明率：{rate} %', {
+          rate: lastSumPercent.toLocaleString()
+        })}`,
+        sText2: `${this.$t('前日比：{dif}', {
+          dif: lastSumRatio
         })}`,
         unit: this.unit
       }
@@ -134,16 +174,16 @@ export default {
             label: tooltipItem => {
               const labelText =
                 this.dataKind === 'transition'
-                  ? `${sumArray[tooltipItem.index]} ${unit}（${this.$t(
-                      '府管轄保健所'
+                  ? `${sumArray[tooltipItem.index]}${unit}（${this.$t(
+                      'リンク不明'
                     )}: ${data[0][tooltipItem.index]}/${this.$t(
-                      '政令中核市保健所'
+                      'リンク確認'
                     )}: ${data[1][tooltipItem.index]}）`
                   : `${
                       cumulativeSumArray[tooltipItem.index]
-                    } ${unit}（${this.$t('府管轄保健所')}: ${
+                    }${unit}（（${this.$t('リンク不明')}: ${
                       cumulativeData[0][tooltipItem.index]
-                    }/${this.$t('政令中核市保健所')}: ${
+                    }/${this.$t('リンク確認')}: ${
                       cumulativeData[1][tooltipItem.index]
                     }）`
               return labelText
@@ -258,7 +298,20 @@ export default {
         return array[array.length - 1]
       })
     },
+    pickLastLastNumber(chartDataArray) {
+      return chartDataArray.map(array => {
+        return array[array.length - 2]
+      })
+    },
     cumulativeSum(chartDataArray) {
+      return chartDataArray.map(array => {
+        return array.reduce((acc, cur) => {
+          return acc + cur
+        })
+      })
+    },
+    cumulativeLastSum(chartDataArray) {
+      chartDataArray.pop()
       return chartDataArray.map(array => {
         return array.reduce((acc, cur) => {
           return acc + cur
@@ -271,6 +324,17 @@ export default {
         sumArray.push(chartDataArray[0][i] + chartDataArray[1][i])
       }
       return sumArray
+    },
+    formatDayBeforeRatio(dayBeforeRatio) {
+      const dayBeforeRatioLocaleString = dayBeforeRatio.toLocaleString()
+      switch (Math.sign(dayBeforeRatio)) {
+        case 1:
+          return `+${dayBeforeRatioLocaleString}`
+        case -1:
+          return `${dayBeforeRatioLocaleString}`
+        default:
+          return `${dayBeforeRatioLocaleString}`
+      }
     }
   }
 }

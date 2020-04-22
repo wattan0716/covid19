@@ -3,29 +3,44 @@
     <div class="SideNavigation-HeadingContainer sp-flex">
       <v-icon
         class="SideNavigation-HeadingIcon pc-none"
-        :aria-label="$t('Navi Open')"
+        :aria-label="$t('サイドメニュー項目を開く')"
         @click="openNavi"
       >
         mdi-menu
       </v-icon>
-      <nuxt-link to="/" class="SideNavigation-HeadingLink">
+      <nuxt-link :to="localePath('/')" class="SideNavigation-HeadingLink">
         <div class="SideNavigation-Logo">
-          <img src="/logo.png" :alt="$t('Tokyo')" />
+          <img src="/logo.png" :alt="$t('大阪府')" />
         </div>
         <h1 class="SideNavigation-Heading">
-          {{ $t('COVID-19') }}<br />{{ $t('Measures site') }}
+          {{ $t('新型コロナウイルス感染症') }}<br />{{ $t('対策サイト') }}
         </h1>
       </nuxt-link>
     </div>
-    <v-divider class="SideNavigation-HeadingDivider" />
+
     <div class="sp-none" :class="{ open: isNaviOpen }">
       <v-icon
         class="SideNavigation-ListContainerIcon pc-none"
-        :aria-label="$t('Navi Close')"
+        :aria-label="$t('サイドメニュー項目を閉じる')"
         @click="closeNavi"
       >
         mdi-close
       </v-icon>
+
+      <div class="SideNavigation-ListItemContainer">
+        <div
+          v-if="this.$i18n.locales.length > 1"
+          class="SideNavigation-Language"
+        >
+          <label class="SideNavigation-LanguageLabel" for="LanguageSelector">
+            {{ $t('多言語対応選択メニュー') }}
+          </label>
+          <LanguageSelector />
+        </div>
+      </div>
+
+      <v-divider class="SideNavigation-Divider" />
+
       <v-list :flat="true">
         <v-container
           v-for="(item, i) in items"
@@ -54,43 +69,13 @@
   </div>
 </template>
 
-<i18n>
-{
-  "ja": {
-    "Navi Open": "サイドメニュー項目を開く",
-    "Navi Close": "サイドメニュー項目を閉じる",
-    "Tokyo": "大阪府",
-    "COVID-19": "新型コロナウイルス感染症",
-    "Measures site": "対策サイト",
-    "Tokyo Metropolitan Government": "大阪府",
-    "Tokyo COVID-19 Task Force": "新型コロナウイルス感染症対策本部",
-    "The latest updates": "府内の最新感染動向",
-    "If you have any symptoms": "新型コロナウイルス感染症が心配なときに",
-    "for Families with children": "お子様をお持ちの皆様へ",
-    "for Citizens": "府民の皆様へ",
-    "for Enterprises and Employees": "企業の皆様・はたらく皆様へ",
-    "Official statements from Task Force": "大阪府新型コロナウイルス感染症対策本部報",
-    "Cancelled public events": "大阪府主催等 中止又は延期するイベント等",
-    "Government official website": "大阪府公式ホームページ",
-    "Message from Governor Koike": "知事からのメッセージ",
-    "About us": "当サイトについて",
-    "About covid19": "新型コロナウイルス感染症について",
-    "Related info": "新型コロナウイルス感染症関連情報",
-    "Task Force": "大阪府新型コロナウイルス対策本部",
-    "Message from Governor": "知事からのメッセージ",
-    "Official Twitter": "大阪府公式Twitter",
-    "Official Facebook": "大阪府公式Facebook",
-    "Official LINE": "大阪府公式LINE",
-    "Bousai Twitter": "おおさか防災ネットTwitter"
-  }
-}
-</i18n>
-
 <script>
 import ListItem from '@/components/ListItem'
+import LanguageSelector from '@/components/LanguageSelector.vue'
 
 export default {
   components: {
+    LanguageSelector,
     ListItem
   },
   props: {
@@ -104,53 +89,53 @@ export default {
       return [
         {
           icon: 'mdi-chart-timeline-variant',
-          title: this.$t('The latest updates'),
-          link: '/'
+          title: this.$t('府内の最新感染動向'),
+          link: this.localePath('/')
         },
         {
           icon: 'covid',
-          title: this.$t('About covid19'),
+          title: this.$t('新型コロナウイルス感染症について'),
           link: 'http://www.pref.osaka.lg.jp/iryo/osakakansensho/corona.html'
         },
         {
           icon: 'mdi-domain',
-          title: this.$t('Related info'),
+          title: this.$t('新型コロナウイルス感染症関連情報'),
           link: 'http://www.pref.osaka.lg.jp/kikaku/covid19info/index.html'
         },
         {
           icon: 'mdi-account-multiple',
-          title: this.$t('Task Force'),
+          title: this.$t('大阪府新型コロナウイルス対策本部'),
           link: 'http://www.pref.osaka.lg.jp/iryo/2019ncov/index.html',
           divider: true
         },
         {
-          title: this.$t('Message from Governor'),
+          title: this.$t('知事からのメッセージ'),
           link:
             'http://www.pref.osaka.lg.jp/iryo/osakakansensho/corona_message.html'
         },
         {
-          title: this.$t('About us'),
-          link: '/about'
+          title: this.$t('当サイトについて'),
+          link: this.localePath('/about')
         },
         {
-          title: this.$t('Government official website'),
+          title: this.$t('大阪府公式ホームページ'),
           link: 'http://www.pref.osaka.lg.jp/',
           divider: true
         },
         {
-          title: this.$t('Official Twitter'),
+          title: this.$t('大阪府公式Twitter'),
           link: 'https://twitter.com/osakaprefPR/'
         },
         {
-          title: this.$t('Official Facebook'),
+          title: this.$t('大阪府公式Facebook'),
           link: 'https://www.facebook.com/osaka.pref'
         },
         {
-          title: this.$t('Official LINE'),
+          title: this.$t('大阪府公式LINE'),
           link: 'https://lin.ee/8IJ5WMv'
         },
         {
-          title: this.$t('Bousai Twitter'),
+          title: this.$t('おおさか防災ネットTwitter'),
           link: 'https://twitter.com/osaka_bousai',
           divider: true
         }
@@ -248,6 +233,19 @@ export default {
     font-weight: bold;
   }
 }
+
+.SideNavigation-Menu {
+  @include lessThan($small) {
+    padding-top: 50px;
+  }
+}
+
+.SideNavigation-LanguageLabel {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 0.85rem;
+}
+
 .open {
   @include lessThan($small) {
     position: fixed;

@@ -1,18 +1,16 @@
 <template>
   <v-card class="DataView">
     <div class="DataView-Inner">
-      <div class="DataView-Content">
-        <div
-          class="DataView-TitleContainer"
+      <div class="DataView-Header">
+        <h3
+          class="DataView-Title"
           :class="!!$slots.infoPanel ? 'with-infoPanel' : ''"
         >
-          <h3 :id="titleId" class="DataView-Title">
-            {{ title }}
-          </h3>
+          {{ title }}
           <div>
             <slot name="button" />
           </div>
-        </div>
+        </h3>
         <slot name="infoPanel" />
       </div>
       <div
@@ -25,7 +23,11 @@
         <slot />
       </div>
       <v-footer class="DataView-Footer">
-        <time :datetime="date">{{ formattedDate }} 時点</time>
+        <time :datetime="date">{{
+          $t('{date} 時点', {
+            date: formattedDate
+          })
+        }}</time>
         <a
           v-if="url"
           class="OpenDataLink"
@@ -61,14 +63,24 @@ export default class DataView extends Vue {
 
 <style lang="scss">
 .DataView {
-  &-Content {
+  &-Header {
     display: flex;
-    justify-content: space-between;
+    align-items: flex-start;
+    flex-flow: column;
+    padding: 0 10px;
+
+    @include largerThan($medium) {
+      padding: 0 5px;
+    }
+
+    @include largerThan($large) {
+      width: 100%;
+      flex-flow: row;
+      flex-wrap: wrap;
+      padding: 0;
+    }
   }
   &-DataInfo {
-    position: absolute;
-    top: 25px;
-    right: 25px;
     &-summary {
       color: $gray-2;
       font-family: Hiragino Sans;
@@ -98,19 +110,20 @@ export default class DataView extends Vue {
     padding: 22px;
     height: 100%;
   }
-  &-TitleContainer {
-    display: flex;
-    flex-flow: column;
-    color: $gray-2;
-    &.with-infoPanel {
-      width: calc(100% - 11em);
-    }
-  }
   &-Title {
-    margin-bottom: 5px;
+    width: 100%;
+    margin-bottom: 10px;
     font-size: 1.25rem;
     line-height: 1.5;
     font-weight: normal;
+    color: $gray-2;
+
+    @include largerThan($large) {
+      margin-bottom: 0;
+      &.with-infoPanel {
+        width: 50%;
+      }
+    }
   }
   &-CardText {
     margin: 30px 0;

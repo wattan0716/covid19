@@ -34,6 +34,7 @@ class DataJson:
         self._inspections_summary_json = {}
         self._contacts1_summary_json = {}
         self._contacts2_summary_json = {}
+        self._transmission_route_json = {}
         self._treated_summary_json = {}
         self._main_summary_json = {}
         self.last_update = datetime.today().astimezone(jst).strftime("%Y/%m/%d %H:%M")
@@ -71,6 +72,11 @@ class DataJson:
         if not self._contacts2_summary_json:
             self.make_contacts2_summary()
         return self._contacts2_summary_json
+
+    def transmission_route_json(self) -> Dict:
+        if not self._transmission_route_json:
+            self.make_transmission_route()
+        return self._transmission_route_json
 
     def treated_summary_json(self) -> Dict:
         if not self._treated_summary_json:
@@ -160,6 +166,23 @@ class DataJson:
             self._contacts2_summary_json["data"]["政令中核市保健所"].append(self.contacts2_sheet.cell(row=i, column=3).value)
             self._contacts2_summary_json["labels"].append(date.strftime("%m/%d"))
 
+    def make_transmission_route(self) -> None:
+        self._transmission_route_json = {
+            "date": self.get_inspections_last_update(),
+            "data": {
+                "感染経路不明者": [],
+                "感染経路明確者": []
+            },
+            "labels": []
+        }
+
+        for i in range(3, self.inspections_count):
+            date = {}
+            date = excel_date(self.inspections_sheet.cell(row=i, column=1).value)
+            self._transmission_route_json["data"]["感染経路不明者"].append(self.inspections_sheet.cell(row=i, column=11).value)
+            self._transmission_route_json["data"]["感染経路明確者"].append(self.inspections_sheet.cell(row=i, column=3).value - self.inspections_sheet.cell(row=i, column=11).value)
+            self._transmission_route_json["labels"].append(date.strftime("%m/%d"))
+
     def make_treated_summary(self) -> None:
         self._treated_summary_json = {
             "date": self.get_inspections_last_update(),
@@ -204,6 +227,7 @@ class DataJson:
             "inspections_summary": self.inspections_summary_json(),
             "contacts1_summary": self.contacts1_summary_json(),
             "contacts2_summary": self.contacts2_summary_json(),
+            "transmission_route_summary": self.transmission_route_json(),
             "treated_summary": self.treated_summary_json(),
             "lastUpdate": self.current_data_json["lastUpdate"],
             "main_summary": self.main_summary_json()

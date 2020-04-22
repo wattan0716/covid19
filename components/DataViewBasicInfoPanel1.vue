@@ -5,18 +5,15 @@
       <small class="DataView-DataInfo-summary-unit">{{ unit }}</small>
     </span>
     <br />
-    <small class="DataView-DataInfo-date">{{ sText }}</small>
+    <small class="DataView-DataInfo-date">{{ sText1 }}</small>
+    <small class="DataView-DataInfo-date">{{ sText2 }}</small>
   </div>
 </template>
 
 <style lang="scss">
 .DataView {
   &-DataInfo {
-    @include largerThan($large) {
-      text-align: right;
-      width: 50%;
-    }
-
+    text-align: right;
     &-summary {
       display: inline-block;
       font-family: Hiragino Sans;
@@ -28,12 +25,20 @@
       }
     }
     &-date {
-      white-space: wrap;
+      white-space: nowrap;
       display: inline-block;
       font-size: 12px;
       line-height: 12px;
       color: $gray-3;
     }
+  }
+}
+.DataView {
+  @include card-container();
+  height: 100%;
+  &-Header {
+    background-color: transparent !important;
+    height: auto !important;
   }
 }
 </style>
@@ -42,9 +47,10 @@
 import { Component, Prop, Vue } from 'vue-property-decorator'
 
 @Component
-export default class DataViewBasicInfoPanel extends Vue {
+export default class DataViewBasicInfoPanel1 extends Vue {
   @Prop() private lText!: string
-  @Prop() private sText!: string
+  @Prop() private sText1!: string
+  @Prop() private sText2!: string
   @Prop() private unit!: string
 }
 </script>
