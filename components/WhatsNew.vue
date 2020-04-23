@@ -9,6 +9,7 @@
     <ul class="WhatsNew-list">
       <li v-for="(item, i) in items" :key="i" class="WhatsNew-list-item">
         <a
+          v-if="item.url"
           class="WhatsNew-list-item-anchor"
           :href="item.url"
           target="_blank"
@@ -32,6 +33,18 @@
             </v-icon>
           </span>
         </a>
+        <span v-else class="WhatsNew-list-item-anchor">
+          <time
+            v-if="item.date"
+            class="WhatsNew-list-item-anchor-time px-2"
+            :datetime="formattedDate(item.date)"
+          >
+            {{ item.date }}
+          </time>
+          <span>
+            {{ item.text }}
+          </span>
+        </span>
       </li>
     </ul>
   </div>
