@@ -208,12 +208,17 @@
       }}
       <br /><br />
       <li>
-        「<a
-          href="http://www.pref.osaka.lg.jp/it-suishin/sc/index.html#3"
-          target="_blank"
-          rel="noopener"
-          >{{ $t('本サイトの構築に関するお問い合わせについて') }}</a
-        >」
+        <i18n path="「{aboutWindow}」">
+          <template v-slot:aboutWindow>
+            <a
+              href="http://www.pref.osaka.lg.jp/it-suishin/sc/index.html#3"
+              target="_blank"
+              rel="noopener"
+            >
+              {{ $t('本サイトの構築に関するお問い合わせについて') }}
+            </a>
+          </template>
+        </i18n>
       </li>
       {{
         $t(

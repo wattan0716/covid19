@@ -418,5 +418,6 @@
   "リンク不明": "Transmission route unknown",
   "リンク確認": "Cases with transmission route confirmed",
   "感染経路不明者（リンク不明者）": "Cases with transmission route unknown",
-  "※報道提供における本日判明数での集計": "*Total number of the cases confirmed today based on the numbers for the press release"
+  "※報道提供における本日判明数での集計": "*Total number of the cases confirmed today based on the numbers for the press release",
+  "「{aboutWindow}」": "”{aboutWindow}”"
 }
