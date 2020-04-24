@@ -190,7 +190,7 @@ export default {
       if (otherAges.includes(row['年代'])) {
         row['年代'] = this.$t(row['年代'])
       } else {
-        const age = row['年代'].substring(0, 2)
+        const age = row['年代'].slice(0, -1)
         row['年代'] = this.$t('{age}代', { age })
       }
     }
