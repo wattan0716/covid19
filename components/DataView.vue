@@ -63,6 +63,7 @@ export default class DataView extends Vue {
 
 <style lang="scss">
 .DataView {
+  height: 100%;
   &-Header {
     display: flex;
     align-items: flex-start;
@@ -78,27 +79,6 @@ export default class DataView extends Vue {
       flex-flow: row;
       flex-wrap: wrap;
       padding: 0;
-    }
-  }
-  &-DataInfo {
-    &-summary {
-      color: $gray-2;
-      font-family: Hiragino Sans;
-      font-style: normal;
-      font-size: 30px;
-      line-height: 30px;
-      white-space: nowrap;
-      &-unit {
-        font-size: 0.6em;
-        width: 100%;
-      }
-    }
-    &-date {
-      font-size: 12px;
-      line-height: 12px;
-      color: $gray-3;
-      width: 100%;
-      display: inline-block;
     }
   }
 }

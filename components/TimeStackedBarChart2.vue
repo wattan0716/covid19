@@ -13,10 +13,9 @@
       {{ $t('※報道提供における本日判明数での集計') }}
     </div>
     <template v-slot:infoPanel>
-      <data-view-basic-info-panel1
+      <data-view-basic-info-panel
         :l-text="displayInfo.lText"
-        :s-text1="displayInfo.sText1"
-        :s-text2="displayInfo.sText2"
+        :s-text-list="[displayInfo.sText1, displayInfo.sText2]"
         :unit="displayInfo.unit"
       />
     </template>
@@ -34,10 +33,10 @@
 <script>
 import DataView from '@/components/DataView.vue'
 import DataSelector from '@/components/DataSelector.vue'
-import DataViewBasicInfoPanel1 from '@/components/DataViewBasicInfoPanel1.vue'
+import DataViewBasicInfoPanel from '@/components/DataViewBasicInfoPanel.vue'
 
 export default {
-  components: { DataView, DataSelector, DataViewBasicInfoPanel1 },
+  components: { DataView, DataSelector, DataViewBasicInfoPanel },
   props: {
     title: {
       type: String,
