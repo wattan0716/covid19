@@ -45,7 +45,7 @@
       </v-col>
       <v-col cols="12" md="6" class="DataCard">
         <time-bar-chart
-          :title="$t('陰性確認済（退院者累計）')"
+          :title="$t('退院・解除済累計')"
           :title-id="'number-of-treated'"
           :chart-id="'time-bar-chart-inspections'"
           :chart-data="treatedGraph"
@@ -185,7 +185,7 @@ export default {
     for (const row of patientsTable.datasets) {
       row['居住地'] = this.$t(row['居住地'])
       row['性別'] = this.$t(row['性別'])
-      row['退院'] = this.$t(row['退院'])
+      row['退院・解除'] = this.$t(row['退院・解除'])
 
       if (otherAges.includes(row['年代'])) {
         row['年代'] = this.$t(row['年代'])
