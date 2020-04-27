@@ -204,7 +204,7 @@ class DataJson:
         self._main_summary_json["value"] = all_inspections
         self._main_summary_json["children"][0]["value"] = all_patients
         self._main_summary_json["children"][0]["children"][0]["value"] = (
-            self.main_summary_sheet.cell(row=5, column=2).value + self.main_summary_sheet.cell(row=6, column=2).value
+            self.main_summary_sheet.cell(row=5, column=2).value
         )
         self._main_summary_json["children"][0]["children"][0]["children"][0]["value"] = (
             self.main_summary_sheet.cell(row=13, column=2).value +
@@ -215,6 +215,14 @@ class DataJson:
         self._main_summary_json["children"][0]["children"][1]["value"] = all_discharges
         self._main_summary_json["children"][0]["children"][2]["value"] = \
             self.main_summary_sheet.cell(row=16, column=2).value
+        self._main_summary_json["children"][0]["children"][3]["value"] = \
+            self.main_summary_sheet.cell(row=20, column=2).value
+        self._main_summary_json["children"][0]["children"][4]["value"] = \
+            self.main_summary_sheet.cell(row=21, column=2).value
+        self._main_summary_json["children"][0]["children"][5]["value"] = \
+            self.main_summary_sheet.cell(row=22, column=2).value
+        self._main_summary_json["children"][0]["children"][6]["value"] = \
+            self.main_summary_sheet.cell(row=6, column=2).value
 
     def make_data(self) -> None:
         self._data_json = {

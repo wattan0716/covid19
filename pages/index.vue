@@ -17,7 +17,7 @@
           :title="$t('検査陽性者の状況')"
           :title-id="'details-of-confirmed-cases'"
           :date="Data.inspections_summary.date"
-          :note="$t('※軽症・無症状には症状調査中を含む')"
+          :note="$t('※現在陽性者数には状況確認中の方を含む')"
         >
           <confirmed-cases-table v-bind="confirmedCases" />
         </svg-card>
