@@ -128,6 +128,8 @@ export default {
     },
     createSortAgeData(items, index, isDescending) {
       const excludeItems = {}
+      const investigatingItems = []
+      // 翻訳後のテキストを取得する
       const translatedAges = excludeAges.map(v => this.$t(v))
 
       const filterItems = items.filter(item => {
@@ -135,16 +137,22 @@ export default {
           excludeItems[item[index]] = excludeItems[item[index]] || []
           excludeItems[item[index]].push(item)
           return false
+        } else if (item[index] === this.$t('調査中')) {
+          investigatingItems.push(item)
+          return false
         } else {
           return true
         }
       })
 
       filterItems.sort((a, b) => {
-        if (b[index] < a[index]) {
-          return 1
+        const aInt = parseInt(a[index].substring(0, a[index].length - 1), 10)
+        const bInt = parseInt(b[index].substring(0, b[index].length - 1), 10)
+
+        if (isDescending) {
+          return aInt - bInt
         } else {
-          return -1
+          return bInt - aInt
         }
       })
 
@@ -154,13 +162,13 @@ export default {
         }
 
         excludeItems[v].forEach(item => {
-          filterItems.unshift(item)
+          filterItems[isDescending ? 'unshift' : 'push'](item)
         })
       })
 
-      if (isDescending) {
-        filterItems.reverse()
-      }
+      investigatingItems.forEach(item => {
+        filterItems[isDescending ? 'push' : 'unshift'](item)
+      })
 
       return filterItems
     }
