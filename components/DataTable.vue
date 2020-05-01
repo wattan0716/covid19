@@ -115,6 +115,8 @@ export default {
       if (isDescending[0] === undefined) return items
       if (index[0] === '年代') {
         return this.createSortAgeData(items, index[0], isDescending[0])
+      } else if (index[0] === '日付') {
+        return this.createSortDateData(items, index[0], isDescending[0])
       } else {
         items.sort((a, b) => {
           if (b[index[0]] < a[index[0]]) {
@@ -125,6 +127,20 @@ export default {
         })
       }
       return items
+    },
+    createSortDateData(items, index, isDescending) {
+      return items.sort((a, b) => {
+        const aDate = a[index].split('/').map(d => parseInt(d))
+        const bDate = b[index].split('/').map(d => parseInt(d))
+
+        let comparison = aDate[1] > bDate[1] ? 1 : -1
+        if (aDate[0] > bDate[0]) {
+          comparison = 1
+        } else if (aDate[0] < bDate[0]) {
+          comparison = -1
+        }
+        return isDescending ? comparison * -1 : comparison
+      })
     },
     createSortAgeData(items, index, isDescending) {
       const excludeItems = {}

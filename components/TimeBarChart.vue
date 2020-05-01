@@ -154,7 +154,6 @@ export default {
     displayOption() {
       const unit = this.unit
       const scaledTicksYAxisMax = this.scaledTicksYAxisMax
-      const self = this
       return {
         tooltips: {
           displayColors: false,
@@ -164,16 +163,6 @@ export default {
                 tooltipItem.value
               ).toLocaleString()} ${unit}`
               return labelText
-            },
-            title(tooltipItem, data) {
-              const matches = data.labels[tooltipItem[0].index].match(
-                /(\w+)\/(\w+)/
-              )
-
-              return self.$t('{month}月{date}日', {
-                month: matches[1],
-                date: matches[2]
-              })
             }
           }
         },

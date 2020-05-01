@@ -186,12 +186,6 @@ export default {
                       cumulativeData[1][tooltipItem.index]
                     }）`
               return labelText
-            },
-            title(tooltipItem, data) {
-              return data.labels[tooltipItem[0].index].replace(
-                /(\w+)\/(\w+)/,
-                '$1月$2日'
-              )
             }
           }
         },

@@ -168,9 +168,9 @@ export default {
       lText: patientsGraph[
         patientsGraph.length - 1
       ].cumulative.toLocaleString(),
-      sText: `${this.$t('{date}の累計', {
+      sText: this.$t('{date}の累計', {
         date: patientsGraph[patientsGraph.length - 1].label
-      })}`,
+      }),
       unit: '人'
     }
 

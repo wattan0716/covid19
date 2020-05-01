@@ -160,7 +160,7 @@ class DataJson:
             date = self.contacts2_sheet.cell(row=i, column=1).value
             self._contacts2_summary_json["data"]["府管轄保健所"].append(self.contacts2_sheet.cell(row=i, column=2).value)
             self._contacts2_summary_json["data"]["政令中核市保健所"].append(self.contacts2_sheet.cell(row=i, column=3).value)
-            self._contacts2_summary_json["labels"].append(date.strftime("%m/%d"))
+            self._contacts2_summary_json["labels"].append(f'{date.month}/{date.day}')
 
     def make_transmission_route(self) -> None:
         self._transmission_route_json = {
@@ -177,7 +177,7 @@ class DataJson:
             date = excel_date(self.inspections_sheet.cell(row=i, column=1).value)
             self._transmission_route_json["data"]["感染経路不明者"].append(self.inspections_sheet.cell(row=i, column=11).value)
             self._transmission_route_json["data"]["感染経路明確者"].append(self.inspections_sheet.cell(row=i, column=3).value - self.inspections_sheet.cell(row=i, column=11).value)
-            self._transmission_route_json["labels"].append(date.strftime("%m/%d"))
+            self._transmission_route_json["labels"].append(f'{date.month}/{date.day}')
 
     def make_treated_summary(self) -> None:
         self._treated_summary_json = {
