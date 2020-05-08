@@ -110,8 +110,7 @@ export default {
         },
         {
           title: this.$t('知事からのメッセージ'),
-          link:
-            'http://www.pref.osaka.lg.jp/iryo/osakakansensho/corona_message.html'
+          link: 'http://www.pref.osaka.lg.jp/kikaku/message_governor/index.html'
         },
         {
           title: this.$t('当サイトについて'),
