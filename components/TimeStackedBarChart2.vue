@@ -178,14 +178,16 @@ export default {
                     )}: ${data[0][tooltipItem.index]}/${this.$t(
                       'リンク確認'
                     )}: ${data[1][tooltipItem.index]}）`
-                  : `${
-                      cumulativeSumArray[tooltipItem.index]
-                    }${unit}（（${this.$t('リンク不明')}: ${
-                      cumulativeData[0][tooltipItem.index]
-                    }/${this.$t('リンク確認')}: ${
-                      cumulativeData[1][tooltipItem.index]
-                    }）`
-              return labelText
+                  : `${cumulativeSumArray[tooltipItem.index]}${unit}（${this.$t(
+                      'リンク不明'
+                    )}: ${cumulativeData[0][tooltipItem.index]}/${this.$t(
+                      'リンク確認'
+                    )}: ${cumulativeData[1][tooltipItem.index]}）`
+
+              // 長い場合 スラッシュで改行
+              return labelText.length < 50
+                ? labelText
+                : labelText.split(/(?<=\/)/g)
             }
           }
         },

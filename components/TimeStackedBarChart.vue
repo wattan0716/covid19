@@ -134,19 +134,20 @@ export default {
             label: tooltipItem => {
               const labelText =
                 this.dataKind === 'transition'
-                  ? `${sumArray[tooltipItem.index]} ${unit}（${this.$t(
+                  ? `${sumArray[tooltipItem.index]}${unit}（${this.$t(
                       '府管轄保健所'
                     )}: ${data[0][tooltipItem.index]}/${this.$t(
                       '政令中核市保健所'
                     )}: ${data[1][tooltipItem.index]}）`
-                  : `${
-                      cumulativeSumArray[tooltipItem.index]
-                    } ${unit}（${this.$t('府管轄保健所')}: ${
-                      cumulativeData[0][tooltipItem.index]
-                    }/${this.$t('政令中核市保健所')}: ${
-                      cumulativeData[1][tooltipItem.index]
-                    }）`
-              return labelText
+                  : `${cumulativeSumArray[tooltipItem.index]}${unit}（${this.$t(
+                      '府管轄保健所'
+                    )}: ${cumulativeData[0][tooltipItem.index]}/${this.$t(
+                      '政令中核市保健所'
+                    )}: ${cumulativeData[1][tooltipItem.index]}）`
+              // 長い場合 スラッシュで改行
+              return labelText.length < 50
+                ? labelText
+                : labelText.split(/(?<=\/)/g)
             }
           }
         },
