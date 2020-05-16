@@ -1,34 +1,34 @@
 <template>
-  <v-col cols="12" md="6" class="DataCard">
-    <data-view
-      :title="$t('市町村毎の感染状況(地図)')"
-      :title-id="'osaka-city-map-table'"
-      :date="Data.patients.date"
-    >
-      <template v-slot:button>
-        <p :class="$style.note">
-          {{ $t('（注）退院している人数を含む') }}
-        </p>
-        <p :class="$style.note2">{{ $t('凡例（単位は人）') }}</p>
-        <table :class="$style.note2">
-          <tbody>
-            <tr>
-              <td><span class="color-test infected-level1" />1-5</td>
-              <td><span class="color-test infected-level2" />6-10</td>
-              <td><span class="color-test infected-level3" />11-15</td>
-            </tr>
-            <tr>
-              <td><span class="color-test infected-level4" />16-20</td>
-              <td><span class="color-test infected-level5" />21-30</td>
-              <td><span class="color-test infected-level6" />31以上</td>
-            </tr>
-          </tbody>
-        </table>
-      </template>
-      <!-- <ibaraki-map /> -->
-      <div id="map" />
-    </data-view>
-  </v-col>
+  <!-- <v-col cols="12" md="6" class="DataCard"> -->
+  <data-view
+    :title="$t('市町村毎の感染状況(地図)')"
+    :title-id="'osaka-city-map-table'"
+    :date="Data.patients.date"
+  >
+    <template v-slot:button>
+      <p :class="$style.note">
+        {{ $t('（注）退院している人数を含む') }}
+      </p>
+      <p :class="$style.note2">{{ $t('凡例（単位は人）') }}</p>
+      <table :class="$style.note2">
+        <tbody>
+          <tr>
+            <td><span class="color-test infected-level1" />1-5</td>
+            <td><span class="color-test infected-level2" />6-10</td>
+            <td><span class="color-test infected-level3" />11-15</td>
+          </tr>
+          <tr>
+            <td><span class="color-test infected-level4" />16-20</td>
+            <td><span class="color-test infected-level5" />21-30</td>
+            <td><span class="color-test infected-level6" />31以上</td>
+          </tr>
+        </tbody>
+      </table>
+    </template>
+    <!-- <ibaraki-map /> -->
+    <div id="map" />
+  </data-view>
+  <!-- </v-col> -->
 </template>
 
 <script>
@@ -38,18 +38,16 @@ import DataView from '@/components/DataView.vue'
 // import IbarakiMap from '@/assets/ibaraki-map.svg'
 // import CityData from '@/data/cities.json'
 
+let graphY = 400
+const pop_data = []
 export default {
   components: {
     // IbarakiMap,
     DataView
   },
   data() {
-    const graphY = 400
-    const popData = []
     const data = {
-      Data,
-      graphY,
-      popData
+      Data
     }
     return data
   },
@@ -88,6 +86,8 @@ export default {
 }
 
 function loadYouseiData() {
+  console.log('start loadYouseiData()')
+
   const xhr = new XMLHttpRequest()
   xhr.onload = function() {
     const tempArray = xhr.responseText.split('\n')
@@ -112,15 +112,18 @@ function loadYouseiData() {
       if (strText[1] == 0) {
         strText[2] = 'white'
       }
-      this.popData.push(strText)
+      pop_data.push(strText)
     }
   }
   xhr.open('get', 'yousei.csv', true)
   xhr.send(null)
+  console.log('end loadYouseiData()')
 }
 
 // 大阪府描画
 function drawOsaka() {
+  console.log('start drawOsaka()')
+
   let g
   const width = window.innerWidth
   const height = window.innerHeight
@@ -154,67 +157,73 @@ function drawOsaka() {
     .attr('height', height)
     .append('g')
   // 同じディレクトリにあるgeojsonファイルをhttp経由で読み込む
-  d3.json('osakapref.json', function(json) {
-    let projection, path
-    // 市区町村表示領域を生成
-    const tooltip = d3
-      .select('body')
-      .append('div')
-      .attr('class', 'tip')
-    // 投影を処理する関数を用意する。データからSVGのPATHに変換するため。
-    projection = d3
-      .geoMercator()
-      .scale(scale)
-      .center(d3.geoCentroid(json)) // データから中心点を計算 .center(d3.geoCentroid(json))
-      .translate([width / 2, height / 2]) // ブラウザの中央に転移
-    // pathジェネレータ関数
-    path = d3.geoPath().projection(projection)
-    // これがenterしたデータ毎に呼び出されpath要素のd属性にgeoJSONデータから変換した値を入れて市町村境界描画
-    map
-      .selectAll('path')
-      .data(json.features)
-      .enter()
-      .append('path')
-      .attr('d', path)
-      // 陽性者に対応した色で境界内を塗る
-      .style('fill', function(d) {
-        return pop_data[d.properties.index][2]
-      })
-    // 左側にデータ表示
-    for (let i = 0; i < 43; i++) {
+  d3.json('osakapref.json')
+    .then(function(json) {
+      let projection, path
+      // 市区町村表示領域を生成
+      const tooltip = d3
+        .select('body')
+        .append('div')
+        .attr('class', 'tip')
+      // 投影を処理する関数を用意する。データからSVGのPATHに変換するため。
+      projection = d3
+        .geoMercator()
+        .scale(scale)
+        .center(d3.geoCentroid(json)) // データから中心点を計算 .center(d3.geoCentroid(json))
+        .translate([width / 2, height / 2]) // ブラウザの中央に転移
+      // pathジェネレータ関数
+      path = d3.geoPath().projection(projection)
+      // これがenterしたデータ毎に呼び出されpath要素のd属性にgeoJSONデータから変換した値を入れて市町村境界描画
       map
-        .append('text')
-        .attr({
-          x: 20,
-          y: i * 13 + 20
+        .selectAll('path')
+        .data(json.features)
+        .enter()
+        .append('path')
+        .attr('d', path)
+        // 陽性者に対応した色で境界内を塗る
+        .style('fill', function(d) {
+          return pop_data[d.properties.index][2]
         })
-        .style('font-size', 12 + 'px')
-        .text(pop_data[i][0] + ':' + pop_data[i][1])
-    }
-
-    // 市町村名表示
-    const xhr = new XMLHttpRequest()
-    xhr.onload = function() {
-      const tempArray = xhr.responseText.split('\n')
-      csvArray = new Array()
-      for (let i = 0; i < tempArray.length; i++) {
-        csvArray[i] = tempArray[i].split(',')
-        const data = csvArray[i]
-        const lonlat = [data[1], data[2]]
-        const xy = projection(lonlat)
+      // 左側にデータ表示
+      for (let i = 0; i < 43; i++) {
         map
           .append('text')
           .attr({
-            x: xy[0] - 15,
-            y: xy[1]
+            x: 20,
+            y: i * 13 + 20
           })
-          .style('font-size', 10 + 'px')
-          .text(data[0])
+          .style('font-size', 12 + 'px')
+          .text(pop_data[i][0] + ':' + pop_data[i][1])
       }
-    }
-    xhr.open('get', 'cityname.csv', true)
-    xhr.send(null)
-  })
+
+      // 市町村名表示
+      const xhr = new XMLHttpRequest()
+      xhr.onload = function() {
+        const tempArray = xhr.responseText.split('\n')
+        csvArray = new Array()
+        for (let i = 0; i < tempArray.length; i++) {
+          csvArray[i] = tempArray[i].split(',')
+          const data = csvArray[i]
+          const lonlat = [data[1], data[2]]
+          const xy = projection(lonlat)
+          map
+            .append('text')
+            .attr({
+              x: xy[0] - 15,
+              y: xy[1]
+            })
+            .style('font-size', 10 + 'px')
+            .text(data[0])
+        }
+      }
+      xhr.open('get', 'cityname.csv', true)
+      xhr.send(null)
+    })
+    .catch(function(error) {
+      // エラー処理
+      console.log('in drawOsaka() error:', error)
+    })
+  console.log('end drawOsaka()')
 }
 </script>
 
