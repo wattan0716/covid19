@@ -223,6 +223,8 @@ class DataJson:
             self.main_summary_sheet.cell(row=22, column=2).value
         self._main_summary_json["children"][0]["children"][6]["value"] = \
             self.main_summary_sheet.cell(row=6, column=2).value
+        self._main_summary_json["children"][0]["children"][7]["value"] = \
+            self.main_summary_sheet.cell(row=23, column=2).value
 
     def make_data(self) -> None:
         self._data_json = {

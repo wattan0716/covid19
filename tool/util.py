@@ -56,6 +56,10 @@ MAIN_SUMMARY_INIT = {
                 {
                     "attr": "入院調整中",
                     "value": 0
+                },
+                {
+                    "attr": "府外健康観察",
+                    "value": 0
                 }
             ]
         }
