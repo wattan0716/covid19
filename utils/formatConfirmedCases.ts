@@ -43,10 +43,6 @@ type DataType = {
         {
           attr: '入院調整中'
           value: number
-        },
-        {
-          attr: '府外健康観察'
-          value: number
         }
       ]
     }
@@ -66,7 +62,6 @@ type ConfirmedCasesType = {
   宿泊療養: number
   療養等調整中: number
   入院調整中: number
-  府外健康観察: number
 }
 
 export default (data: DataType) => {
@@ -82,8 +77,7 @@ export default (data: DataType) => {
     自宅療養: data.children[0].children[3].value,
     宿泊療養: data.children[0].children[4].value,
     療養等調整中: data.children[0].children[5].value,
-    入院調整中: data.children[0].children[6].value,
-    府外健康観察: data.children[0].children[7].value
+    入院調整中: data.children[0].children[6].value
   }
 
   formattedData['現在陽性者数'] =
@@ -91,8 +85,7 @@ export default (data: DataType) => {
     formattedData['入院調整中'] +
     formattedData['自宅療養'] +
     formattedData['宿泊療養'] +
-    formattedData['療養等調整中'] +
-    formattedData['府外健康観察']
+    formattedData['療養等調整中']
 
   return formattedData
 }
