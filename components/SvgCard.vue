@@ -2,7 +2,8 @@
   <data-view class="SvgCard" :title="title" :title-id="titleId" :date="date">
     <slot />
     <div class="note">
-      {{ note }}
+      {{ $t('※現在陽性者数には、府外で健康観察を実施している方を含む') }}<br />
+      {{ $t('※再陽性者を除く') }}
     </div>
   </data-view>
 </template>

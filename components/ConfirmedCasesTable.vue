@@ -14,7 +14,8 @@
         入院調整中,
         自宅療養,
         宿泊療養,
-        療養等調整中
+        療養等調整中,
+        府外健康観察
       )
     "
   >
@@ -148,6 +149,10 @@ export default {
       required: true
     },
     療養等調整中: {
+      type: Number,
+      required: true
+    },
+    府外健康観察: {
       type: Number,
       required: true
     }
