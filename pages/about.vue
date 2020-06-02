@@ -180,17 +180,19 @@
       </i18n>
     </TextCard>
 
-    <TextCard :title="$t('お問い合わせ先')">
+    <TextCard :title="$t('問い合わせ先')">
       <li>
         <i18n path="「{aboutHP}」">
           <template v-slot:aboutHP>
             <a
-              href="http://www.pref.osaka.lg.jp/iryo/osakakansensho/corona-denwa.html"
+              href="http://www.pref.osaka.lg.jp/smart_somu/faq/index.html"
               target="_blank"
               rel="noopener"
             >
               {{
-                $t('新型コロナウイルス感染症の発生に伴う電話相談窓口について')
+                $t(
+                  '新型コロナウイルス感染症の発生に伴う各種電話相談窓口について'
+                )
               }}
             </a>
           </template>
@@ -198,20 +200,16 @@
       </li>
       {{
         $t(
-          '大阪府では、府民からの健康相談に応えるため、専用の府民相談窓口を設置しています。'
+          '大阪府では、府民からの各種相談に応えるため、専用の府民相談窓口を設置しています。'
         )
       }}<br />
-      {{
-        $t(
-          'また、新型コロナウイルス感染症に感染が疑われる方を対象に、府内各保健所に、新型コロナ受診相談センター（帰国者・接触者相談センター）を設置しています。詳しくは上記リンクより案内をご覧下さい。'
-        )
-      }}
+      {{ $t('詳しくは上記リンクより案内をご覧下さい。') }}<br />
       <br /><br />
       <li>
         <i18n path="「{aboutWindow}」">
           <template v-slot:aboutWindow>
             <a
-              href="http://www.pref.osaka.lg.jp/it-suishin/sc/index.html#3"
+              href="https://www.shinsei.pref.osaka.lg.jp/ers/input?tetudukiId=2020050020"
               target="_blank"
               rel="noopener"
             >

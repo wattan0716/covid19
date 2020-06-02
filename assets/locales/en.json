@@ -476,5 +476,11 @@
   "療養等調整中": "Patients whose recuperation facilities are not decided yet.",
   "検査陽性者の状況: 検査実施人数は{inspected}人、うち累積の陽性者数は{positive}人で、現在陽性者数は{currentlyPositive}人です。入院中は{hospitalized}人で、重症は{critically}人です、また入院調整中は{hospitalizeAdjust}人です。自宅療養は{recuperatingHome}人、宿泊療養は{recuperatingLodging}人、また療養等調整中は{recuperatingAdjust}人です。さらに死亡は{deceased}人、退院・解除済累計は{discharged}人です。": "Details of people testing positive: The number of people tested:{inspected}, Total of people tested:{positive}, the current number of those tested positive:{currentlyPositive}, Hospitalized:{hospitalized}, Severe symptoms:{critically}, Need to be hospitalized:{hospitalizeAdjust}, recuperation at home:{recuperatingHome}, recuperation in special facilities:{recuperatingLodging}, patients whose recuperation facilities are not decided yet:{recuperatingAdjust}, Deaths:{deceased}, Discharged:{discharged}.",
   "本サイトの構築に関することについては、大阪府総務部スマートシティ戦略総務課にお問い合わせください。": "If you have any questions about the construction of this website, please contact:\n\nGeneral Affairs Division, \nDepartment of Smart City Strategy,\nOsaka Prefectural Government",
-  "本サイトの構築に関することについては、大阪府スマートシティ戦略部スマートシティ戦略総務課にお問い合わせください。": "If you have any questions about the construction of this website, please contact:\n\nGeneral Affairs Division,\nDepartment of Smart City Strategy,\nOsaka Prefectural Government"
+  "本サイトの構築に関することについては、大阪府スマートシティ戦略部スマートシティ戦略総務課にお問い合わせください。": "If you have any questions about the construction of this website, please contact:\n\nGeneral Affairs Division,\nDepartment of Smart City Strategy,\nOsaka Prefectural Government",
+  "※現在陽性者数には、府外で健康観察を実施している方を含む": "※現在陽性者数には、府外で健康観察を実施している方を含む",
+  "※再陽性者を除く": "※再陽性者を除く",
+  "問い合わせ先": "Contact information",
+  "新型コロナウイルス感染症の発生に伴う各種電話相談窓口について": "Helplines in response to the outbreak of COVID-19",
+  "大阪府では、府民からの各種相談に応えるため、専用の府民相談窓口を設置しています。": "Osaka Prefecture has set up several dedicated helplines to respond to various concerns from Osaka residents.",
+  "詳しくは上記リンクより案内をご覧下さい。": "Please see the link above for further details."
 }
