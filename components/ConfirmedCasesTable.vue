@@ -12,6 +12,8 @@
         退院,
         現在陽性者数,
         入院調整中,
+        入院待機中,
+        入院もしくは療養方法の調整中,
         自宅療養,
         宿泊療養,
         療養等調整中,
@@ -78,6 +80,30 @@
                   >{{ 入院調整中 }}{{ $t('人') }}</span
                 >
               </div>
+              <ul
+                :class="[
+                  $style.container,
+                  $style['sub-container'],
+                  $style['is-gray']
+                ]"
+              >
+                <li>
+                  <div :class="[$style.row, $style['is-gray']]">
+                    <span>{{ $t('入院待機中') }}</span>
+                    <span :class="$style.value"
+                      >{{ 入院待機中 }}{{ $t('人') }}</span
+                    >
+                  </div>
+                </li>
+                <li>
+                  <div :class="[$style.row, $style['is-gray']]">
+                    <span>{{ $t('入院もしくは療養方法の調整中') }}</span>
+                    <span :class="$style.value"
+                      >{{ 入院もしくは療養方法の調整中 }}{{ $t('人') }}</span
+                    >
+                  </div>
+                </li>
+              </ul>
             </li>
             <li>
               <div :class="[$style.row, $style['is-gray']]">
@@ -155,6 +181,14 @@ export default {
       required: true
     },
     入院調整中: {
+      type: Number,
+      required: true
+    },
+    入院待機中: {
+      type: Number,
+      required: true
+    },
+    入院もしくは療養方法の調整中: {
       type: Number,
       required: true
     },
