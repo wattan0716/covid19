@@ -471,7 +471,7 @@
   "宿泊療養": "recuperation in special facilities",
   "陰性確認済（退院者累計数）": "Negative Confirmed (Total Number of Discharged Patients)",
   "入院": "Negative Confirmed (Total Number of Discharged Patients)",
-  "入院調整中": "Need to be hospitalized",
+  "入院調整中": "Total of (1) and (2)",
   "※現在陽性者数には状況確認中の方を含む": "The current number of the testing positive includes the number of people whose situations are being confirmed.\n\n",
   "療養等調整中": "Patients whose recuperation facilities are not decided yet.",
   "検査陽性者の状況: 検査実施人数は{inspected}人、うち累積の陽性者数は{positive}人で、現在陽性者数は{currentlyPositive}人です。入院中は{hospitalized}人で、重症は{critically}人です、また入院調整中は{hospitalizeAdjust}人です。自宅療養は{recuperatingHome}人、宿泊療養は{recuperatingLodging}人、また療養等調整中は{recuperatingAdjust}人です。さらに死亡は{deceased}人、退院・解除済累計は{discharged}人です。": "Details of people testing positive: The number of people tested:{inspected}, Total of people tested:{positive}, the current number of those tested positive:{currentlyPositive}, Hospitalized:{hospitalized}, Severe symptoms:{critically}, Need to be hospitalized:{hospitalizeAdjust}, recuperation at home:{recuperatingHome}, recuperation in special facilities:{recuperatingLodging}, patients whose recuperation facilities are not decided yet:{recuperatingAdjust}, Deaths:{deceased}, Discharged:{discharged}.",
@@ -482,5 +482,7 @@
   "問い合わせ先": "Contact information",
   "新型コロナウイルス感染症の発生に伴う各種電話相談窓口について": "Helplines in response to the outbreak of COVID-19",
   "大阪府では、府民からの各種相談に応えるため、専用の府民相談窓口を設置しています。": "Osaka Prefecture has set up several dedicated helplines to respond to various concerns from Osaka residents.",
-  "詳しくは上記リンクより案内をご覧下さい。": "Please see the link above for further details."
+  "詳しくは上記リンクより案内をご覧下さい。": "Please see the link above for further details.",
+  "入院待機中": "(1)Number of people waiting to be hospitalized",
+  "入院もしくは療養方法の調整中": "(2)Number of people who are not decided yet where to stay for the recuperation"
 }
