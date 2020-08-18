@@ -55,7 +55,17 @@ MAIN_SUMMARY_INIT = {
                 },
                 {
                     "attr": "入院調整中",
-                    "value": 0
+                    "value": 0,
+                    "children": [
+                        {
+                            "attr": "入院待機中",
+                            "value": 0
+                        },
+                        {
+                            "attr": "入院もしくは療養方法の調整中",
+                            "value": 0
+                        }
+                    ]
                 },
                 {
                     "attr": "府外健康観察",

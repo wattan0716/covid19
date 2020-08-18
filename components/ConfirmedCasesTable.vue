@@ -12,6 +12,8 @@
         退院,
         現在陽性者数,
         入院調整中,
+        入院待機中,
+        入院もしくは療養方法の調整中,
         自宅療養,
         宿泊療養,
         療養等調整中,
@@ -20,7 +22,7 @@
     "
   >
     <li>
-      <div :class="[$style.row, $style['is-black']]">
+      <div :class="[$style.row, $style['is-conducted']]">
         <span v-text="$t('検査実施件数')">)"></span>
         <span :class="$style.value"
           >{{ 検査実施人数 }}{{ $t('件.tested') }}</span
@@ -28,23 +30,41 @@
       </div>
     </li>
     <li>
-      <div :class="$style.row">
+      <div :class="[$style.row, $style['is-positive']]">
         <span>{{ $t('陽性者数（累積）') }}</span>
         <span :class="$style.value">{{ 陽性物数 }}{{ $t('人') }}</span>
       </div>
-      <ul :class="$style.container">
+      <ul
+        :class="[
+          $style.container,
+          $style['sub-container'],
+          $style['is-positive']
+        ]"
+      >
         <li>
-          <div :class="[$style.row, $style['is-positive']]">
+          <div :class="[$style.row, $style['is-current-positive']]">
             <span>{{ $t('現在陽性者数') }}</span>
             <span :class="$style.value">{{ 現在陽性者数 }}{{ $t('人') }}</span>
           </div>
-          <ul :class="$style.container">
+          <ul
+            :class="[
+              $style.container,
+              $style['sub-container'],
+              $style['is-current-positive']
+            ]"
+          >
             <li>
               <div :class="[$style.row, $style['is-gray']]">
                 <span v-text="$t('入院')" />
                 <span :class="$style.value">{{ 入院中 }}{{ $t('人') }}</span>
               </div>
-              <ul :class="$style.container">
+              <ul
+                :class="[
+                  $style.container,
+                  $style['sub-container'],
+                  $style['is-gray']
+                ]"
+              >
                 <li>
                   <div :class="[$style.row, $style['is-gray']]">
                     <span>{{ $t('重症') }}</span>
@@ -60,6 +80,30 @@
                   >{{ 入院調整中 }}{{ $t('人') }}</span
                 >
               </div>
+              <ul
+                :class="[
+                  $style.container,
+                  $style['sub-container'],
+                  $style['is-gray']
+                ]"
+              >
+                <li>
+                  <div :class="[$style.row, $style['is-gray']]">
+                    <span>{{ $t('入院待機中') }}</span>
+                    <span :class="$style.value"
+                      >{{ 入院待機中 }}{{ $t('人') }}</span
+                    >
+                  </div>
+                </li>
+                <li>
+                  <div :class="[$style.row, $style['is-gray']]">
+                    <span>{{ $t('入院もしくは療養方法の調整中') }}</span>
+                    <span :class="$style.value"
+                      >{{ 入院もしくは療養方法の調整中 }}{{ $t('人') }}</span
+                    >
+                  </div>
+                </li>
+              </ul>
             </li>
             <li>
               <div :class="[$style.row, $style['is-gray']]">
@@ -140,6 +184,14 @@ export default {
       type: Number,
       required: true
     },
+    入院待機中: {
+      type: Number,
+      required: true
+    },
+    入院もしくは療養方法の調整中: {
+      type: Number,
+      required: true
+    },
     自宅療養: {
       type: Number,
       required: true
@@ -196,37 +248,68 @@ export default {
 </script>
 
 <style lang="scss" module>
-$rowSidePadding: 1.5em;
-$rowNestPadding: 2em;
+$borderWidth: 2px;
+$itemGap: 0.25em;
 
-.container {
-  &,
-  ul {
-    padding-left: 0 !important;
-  }
+$positiveColor: lighten($green-1, 50%);
+$currentPositiveColor: #e6e6e6;
+$deceasedColor: #ccc;
+$conductedColor: #333;
+
+// for .sub-container
+@mixin scBoxShadow($color) {
+  box-shadow: $color 0px 2px 0px 0px inset;
+}
+
+ul.container {
+  padding: 0;
+
+  letter-spacing: 0.05em;
 
   &,
   li {
     list-style: none;
   }
 
-  > * + *,
-  .container {
-    margin-top: 4px;
+  > li + li {
+    margin-top: $itemGap;
+  }
+}
+
+ul.sub-container {
+  padding: $itemGap 0 0 2.25em;
+  position: relative;
+
+  &::before {
+    content: '';
+
+    width: 2em;
+
+    border: solid $green-1;
+    border-width: 0 $borderWidth $borderWidth;
+
+    @include scBoxShadow(#fff);
+
+    position: absolute;
+    top: -2px;
+    left: 0;
+    bottom: 0;
   }
 
-  // ネスト用のスタイルを吐き出す
-  @for $i from 1 to 4 {
-    $selector: '.container';
+  &.is-positive::before {
+    background: $positiveColor;
+    @include scBoxShadow($positiveColor);
+  }
 
-    @for $j from 1 to $i {
-      $selector: $selector + ' .container';
+  &.is-current-positive {
+    &::before,
+    .sub-container::before {
+      background: $currentPositiveColor;
+      @include scBoxShadow($currentPositiveColor);
     }
 
-    $selector: $selector + ' .row';
-
-    #{$selector} {
-      padding-left: $rowNestPadding * $i + $rowSidePadding;
+    .row {
+      background: $currentPositiveColor;
     }
   }
 }
@@ -236,29 +319,29 @@ $rowNestPadding: 2em;
   align-items: center;
   justify-content: space-between;
 
-  padding: 0.25em $rowSidePadding;
+  padding: 0.5em 1em;
 
   font-weight: bold;
 
   border: solid 2px $green-1;
 
-  color: $green-1;
+  color: darken($green-1, 15%);
 
-  &.is-black {
-    border-color: #333;
-    color: #4d4d4d;
+  &.is-positive {
+    background: $positiveColor;
   }
 
   &.is-deceased {
-    background: rgba(#333, 30%);
+    background: $deceasedColor;
   }
 
-  &.is-positive {
-    background: rgba($green-1, 20%);
+  &.is-current-positive {
+    background: $currentPositiveColor;
   }
 
-  &.is-gray {
-    background: rgba(#333, 10%);
+  &.is-conducted {
+    border-color: $conductedColor;
+    color: $conductedColor;
   }
 }
 
@@ -266,5 +349,7 @@ $rowNestPadding: 2em;
   flex: none;
 
   margin-left: 1em;
+
+  letter-spacing: 0.075em;
 }
 </style>

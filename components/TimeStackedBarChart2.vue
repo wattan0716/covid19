@@ -93,8 +93,12 @@ export default {
         const lastRatio = this.formatDayBeforeRatio(
           lastArray[0] - lastlastArray[0]
         )
-        const lastPercent =
+        let lastPercent =
           Math.floor((lastNum / this.sum(lastArray)) * 100 * 10 ** 2) / 10 ** 2
+
+        if (isNaN(lastPercent)) {
+          lastPercent = 0
+        }
 
         return {
           lText: lastNum.toLocaleString(),

@@ -201,30 +201,50 @@ class DataJson:
             all_inspections += self.inspections_sheet.cell(row=i, column=2).value
             all_patients += self.inspections_sheet.cell(row=i, column=3).value
             all_discharges += self.inspections_sheet.cell(row=i, column=8).value
+        # 検査実施人数
         self._main_summary_json["value"] = all_inspections
+        #   陽性患者数
         self._main_summary_json["children"][0]["value"] = all_patients
+        #     入院／入院調整中
         self._main_summary_json["children"][0]["children"][0]["value"] = (
             self.main_summary_sheet.cell(row=5, column=2).value
         )
+        #       軽症・中等症
         self._main_summary_json["children"][0]["children"][0]["children"][0]["value"] = (
-            self.main_summary_sheet.cell(row=13, column=2).value +
-            self.main_summary_sheet.cell(row=15, column=2).value
-        )
-        self._main_summary_json["children"][0]["children"][0]["children"][1]["value"] = \
-            self.main_summary_sheet.cell(row=14, column=2).value
-        self._main_summary_json["children"][0]["children"][1]["value"] = all_discharges
-        self._main_summary_json["children"][0]["children"][2]["value"] = \
+            self.main_summary_sheet.cell(row=14, column=2).value +
             self.main_summary_sheet.cell(row=16, column=2).value
+        )
+        #       重症
+        self._main_summary_json["children"][0]["children"][0]["children"][1]["value"] = \
+            self.main_summary_sheet.cell(row=15, column=2).value
+        #     退院
+        self._main_summary_json["children"][0]["children"][1]["value"] = all_discharges
+        #     死亡
+        self._main_summary_json["children"][0]["children"][2]["value"] = \
+            self.main_summary_sheet.cell(row=17, column=2).value
+        #     自宅療養
         self._main_summary_json["children"][0]["children"][3]["value"] = \
-            self.main_summary_sheet.cell(row=20, column=2).value
-        self._main_summary_json["children"][0]["children"][4]["value"] = \
             self.main_summary_sheet.cell(row=21, column=2).value
-        self._main_summary_json["children"][0]["children"][5]["value"] = \
+        #     宿泊療養
+        self._main_summary_json["children"][0]["children"][4]["value"] = \
             self.main_summary_sheet.cell(row=22, column=2).value
-        self._main_summary_json["children"][0]["children"][6]["value"] = \
-            self.main_summary_sheet.cell(row=6, column=2).value
-        self._main_summary_json["children"][0]["children"][7]["value"] = \
+        #     療養等調整中
+        self._main_summary_json["children"][0]["children"][5]["value"] = \
             self.main_summary_sheet.cell(row=23, column=2).value
+        #     入院調整中
+        self._main_summary_json["children"][0]["children"][6]["value"] = (
+            self.main_summary_sheet.cell(row=6, column=2).value +
+            self.main_summary_sheet.cell(row=7, column=2).value
+        )
+        #       入院待機中
+        self._main_summary_json["children"][0]["children"][6]["children"][0]["value"] = \
+            self.main_summary_sheet.cell(row=6, column=2).value
+        #       入院もしくは療養方法の調整中
+        self._main_summary_json["children"][0]["children"][6]["children"][1]["value"] = \
+            self.main_summary_sheet.cell(row=7, column=2).value
+        #     府外健康観察
+        self._main_summary_json["children"][0]["children"][7]["value"] = \
+            self.main_summary_sheet.cell(row=24, column=2).value
 
     def make_data(self) -> None:
         self._data_json = {
