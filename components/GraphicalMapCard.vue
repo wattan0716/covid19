@@ -38,8 +38,8 @@ import DataView from '@/components/DataView.vue'
 // import IbarakiMap from '@/assets/ibaraki-map.svg'
 // import CityData from '@/data/cities.json'
 
-let graphY = 400
-const pop_data = []
+// let graphY = 400 // 未使用のため、コメントアウト
+const popData = []
 export default {
   components: {
     // IbarakiMap,
@@ -106,13 +106,15 @@ function loadYouseiData() {
       if (strText[1] <= 4 && strText[1] > 1) {
         strText[2] = 'pink'
       }
+      // eslint-disable-next-line eqeqeq
       if (strText[1] == 1) {
         strText[2] = 'lemonchiffon'
       }
+      // eslint-disable-next-line eqeqeq
       if (strText[1] == 0) {
         strText[2] = 'white'
       }
-      pop_data.push(strText)
+      popData.push(strText)
     }
   }
   xhr.open('get', 'yousei.csv', true)
@@ -124,29 +126,28 @@ function loadYouseiData() {
 function drawOsaka() {
   console.log('start drawOsaka()')
 
-  let g
   const width = window.innerWidth
   const height = window.innerHeight
-  const ua = window.navigator.userAgent.toLowerCase() // ブラウザ判定
+  // const ua = window.navigator.userAgent.toLowerCase() // ブラウザ判定 // 未使用のため、コメントアウト
   // scaleはスクリーンの大きさによって変更
   let scale
-  let label_font_size
-  let label_width
-  let label_height
-  let font_size
+  // let label_font_size // 未使用のため、コメントアウト
+  // let label_width // 未使用のため、コメントアウト
+  // let label_height // 未使用のため、コメントアウト
+  // let font_size // 未使用のため、コメントアウト
 
   // スマートフォンの時は変数調整
   if (width < 601) {
     scale = 30000
-    label_font_size = '16pt'
-    label_width = 40
-    font_size = '7pt'
-    graphY = height / 2
+    // label_font_size = '16pt' // 未使用のため、コメントアウト
+    // label_width = 40 // 未使用のため、コメントアウト
+    // font_size = '7pt' // 未使用のため、コメントアウト
+    // graphY = height / 2 // 未使用のため、コメントアウト
   } else {
-    scale = 40000
-    label_font_size = '16pt'
-    label_width = 80
-    font_size = '10pt'
+    scale = 25000
+    // label_font_size = '16pt' // 未使用のため、コメントアウト
+    // label_width = 80 // 未使用のため、コメントアウト
+    // font_size = '10pt' // 未使用のため、コメントアウト
   }
 
   // マップ描画
@@ -159,20 +160,21 @@ function drawOsaka() {
   // 同じディレクトリにあるgeojsonファイルをhttp経由で読み込む
   d3.json('osakapref.json')
     .then(function(json) {
-      let projection, path
       // 市区町村表示領域を生成
+      /* ツールチップ
       const tooltip = d3
         .select('body')
         .append('div')
         .attr('class', 'tip')
+      */
       // 投影を処理する関数を用意する。データからSVGのPATHに変換するため。
-      projection = d3
+      const projection = d3
         .geoMercator()
         .scale(scale)
         .center(d3.geoCentroid(json)) // データから中心点を計算 .center(d3.geoCentroid(json))
         .translate([width / 2, height / 2]) // ブラウザの中央に転移
       // pathジェネレータ関数
-      path = d3.geoPath().projection(projection)
+      const path = d3.geoPath().projection(projection)
       // これがenterしたデータ毎に呼び出されpath要素のd属性にgeoJSONデータから変換した値を入れて市町村境界描画
       map
         .selectAll('path')
@@ -182,7 +184,7 @@ function drawOsaka() {
         .attr('d', path)
         // 陽性者に対応した色で境界内を塗る
         .style('fill', function(d) {
-          return pop_data[d.properties.index][2]
+          return popData[d.properties.index][2]
         })
       // 左側にデータ表示
       for (let i = 0; i < 43; i++) {
@@ -193,14 +195,14 @@ function drawOsaka() {
             y: i * 13 + 20
           })
           .style('font-size', 12 + 'px')
-          .text(pop_data[i][0] + ':' + pop_data[i][1])
+          .text(popData[i][0] + ':' + popData[i][1])
       }
 
       // 市町村名表示
       const xhr = new XMLHttpRequest()
       xhr.onload = function() {
         const tempArray = xhr.responseText.split('\n')
-        csvArray = new Array()
+        const csvArray = []
         for (let i = 0; i < tempArray.length; i++) {
           csvArray[i] = tempArray[i].split(',')
           const data = csvArray[i]
