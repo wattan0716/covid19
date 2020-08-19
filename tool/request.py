@@ -100,6 +100,8 @@ class DataJson:
         return records
 
     def get_data(self):
+        print("処理開始")
+        print("クライアント証明書作成START")
         # クライアント証明書作成
         client = os.environ['CLIENT']
         clientList = client.split('\\n')
@@ -107,12 +109,14 @@ class DataJson:
         with open(self.cert_txt, 'w') as f:
             f.writelines(tmp)
 
+        print("更新日付の取得START")
         # 「更新日付」の取得
         records = self.get_kintone_records('825', '')
         for record in records['records']:
             d_date = datetime.strptime(record['日付']['value'], "%Y-%m-%d")
             self.update_json = d_date.strftime('%Y/%m/%d') + ' 00:00'
 
+        print("陽性者の取得START")
         # 「陽性者」の取得
         self.patients_json["date"] = self.update_json
         records = self.get_kintone_records('818', 'order by 番号 asc')
@@ -135,6 +139,7 @@ class DataJson:
             data["date"] = record['報道提供日']['value']
             self.patients_json["data"].append(data)
 
+        print("検査件数等の取得START")
         # 「検査件数等」の取得
         self.patients_summary_json["date"] = self.update_json
         self.inspections_summary_json["date"] = self.update_json
@@ -179,6 +184,7 @@ class DataJson:
         self.main_summary_json["value"] = treated_total
         self.main_summary_json["children"][0]["value"] = patients_total
 
+        print("府民向け相談窓口への相談件数の取得START")
         # 「府民向け相談窓口への相談件数」の取得
         records = self.get_kintone_records('822', 'order by 日付 asc')
         for record in records['records']:
@@ -189,6 +195,7 @@ class DataJson:
             d_date = datetime.strptime(record['日付']['value'], "%Y-%m-%d")
             self.contacts1_summary_json["date"] = d_date.strftime('%Y/%m/%d') + ' 00:00'
 
+        print("新型コロナ受診相談センターへの相談件数START")
         # 「新型コロナ受診相談センターへの相談件数」の取得
         records = self.get_kintone_records('823', 'order by 日付 asc')
         for record in records['records']:
@@ -205,6 +212,7 @@ class DataJson:
             d_date = datetime.strptime(record['日付']['value'], "%Y-%m-%d")
             self.contacts2_summary_json["date"] = d_date.strftime('%Y/%m/%d') + ' 00:00'
 
+        print("検査陽性者の状況の取得START")
         # 「検査陽性者の状況」取得
         # 「症状」の取得
         records = self.get_kintone_records('816', '')
@@ -223,6 +231,7 @@ class DataJson:
             self.main_summary_json["children"][0]["children"][2]["value"] = \
                 int(record['死亡']['value'])
 
+        print("入退院の状況の取得START")
         # 「入退院の状況」の取得
         records = self.get_kintone_records('819', '')
         for record in records['records']:
@@ -254,6 +263,7 @@ class DataJson:
             self.main_summary_json["children"][0]["children"][7]["value"] = \
                 int(record['府外健康観察']['value'])
 
+        print("jsonまとめSTART")
         # jsonまとめ
         self.data_json = {
             "patients": self.patients_json,

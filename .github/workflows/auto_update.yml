@@ -18,7 +18,7 @@ jobs:
           pip3 install -r ./tool/requirements_req.txt
           git config user.name ${NAME}
           git config user.email ${EMAIL}
-          git remote set-url --push origin https://teppei696:$GITHUB_TOKEN@github.com/teppei696/covid19
+          git remote set-url --push origin https://teppei696:$GITHUB_TOKEN@github.com/codeforosaka/covid19
           git branch
           git checkout master
           git branch
