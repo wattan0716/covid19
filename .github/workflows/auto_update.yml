@@ -1,0 +1,38 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: Auto Update From kintone
+
+on:
+  schedule:
+    - cron:  '*/10 * * * *'
+#  push: # 一度動作確認してActionsが動きそうならオフにする # オフにしないとpushの無限ループにおちいるよ。
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Get kintone data & commit + push
+        run: |
+          pip3 install -r ./tool/requirements_req.txt
+          git config user.name ${NAME}
+          git config user.email ${EMAIL}
+          git remote set-url --push origin https://teppei696:$GITHUB_TOKEN@github.com/teppei696/covid19
+          git branch
+          git checkout master
+          git branch
+          python3 ./tool/request.py
+        env:
+          KINTONE_API_TOKEN_816: ${{ secrets.KINTONE_API_TOKEN_816 }}
+          KINTONE_API_TOKEN_818: ${{ secrets.KINTONE_API_TOKEN_818 }}
+          KINTONE_API_TOKEN_819: ${{ secrets.KINTONE_API_TOKEN_819 }}
+          KINTONE_API_TOKEN_820: ${{ secrets.KINTONE_API_TOKEN_820 }}
+          KINTONE_API_TOKEN_821: ${{ secrets.KINTONE_API_TOKEN_821 }}
+          KINTONE_API_TOKEN_822: ${{ secrets.KINTONE_API_TOKEN_822 }}
+          KINTONE_API_TOKEN_823: ${{ secrets.KINTONE_API_TOKEN_823 }}
+          KINTONE_API_TOKEN_825: ${{ secrets.KINTONE_API_TOKEN_825 }}
+          CLIENT: ${{ secrets.CLIENT }}
+          NAME: teppei696
+          EMAIL: teppei6969@gmail.com
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
