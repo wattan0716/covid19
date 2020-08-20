@@ -244,12 +244,12 @@ function drawOsaka() {
 </style>
 <!-- 本来ならばSVGをinline展開してそこに限定してcssを適用するべきだが、inline展開ができなかったため妥協 -->
 <style lang="scss">
-$infected-level1: #ccfbcc;
-$infected-level2: #88f2a9;
-$infected-level3: #44e5b7;
-$infected-level4: #00c1d5;
-$infected-level5: #004da5;
-$infected-level6: #000072;
+$infected-level1: white;
+$infected-level2: lemonchiffon;
+$infected-level3: pink;
+$infected-level4: magenta;
+$infected-level5: deeppink;
+$infected-level6: red;
 
 .color-test {
   vertical-align: middle;
