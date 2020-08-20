@@ -23,9 +23,6 @@ jobs:
           git checkout master
           git branch
           python3 ./tool/request.py
-          git add .
-          git commit -m "auto update!" || true
-          git push origin master || true
         env:
           KINTONE_API_TOKEN_816: ${{ secrets.KINTONE_API_TOKEN_816 }}
           KINTONE_API_TOKEN_818: ${{ secrets.KINTONE_API_TOKEN_818 }}
