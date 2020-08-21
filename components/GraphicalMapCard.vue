@@ -26,7 +26,7 @@
       </table>
     </template>
     <!-- <ibaraki-map /> -->
-    <div id="map" />
+    <div id="map" ref="map" class="osaka-map" />
   </data-view>
   <!-- </v-col> -->
 </template>
@@ -53,7 +53,7 @@ export default {
   },
   mounted() {
     loadYouseiData()
-    drawOsaka()
+    drawOsaka(this.$refs.map.clientWidth)
     // const patients = Data.patients.data
     // 市町村の患者人数の連想配列
     // const cityPatientsNumber = {}
@@ -123,20 +123,37 @@ function loadYouseiData() {
 }
 
 // 大阪府描画
-function drawOsaka() {
+function drawOsaka(elementWidth) {
   console.log('start drawOsaka()')
 
-  const width = window.innerWidth
-  const height = window.innerHeight
+  // scale = 10000 のときのwidthとheight(描画後のwidth/heightから取得)
+  const osakaPrefBaseSize = {
+    width: 114.37,
+    height: 165.2,
+    scale: 10000
+  }
+
+  const osakaPrefHorizontalToVerticalRatio =
+    osakaPrefBaseSize.height / osakaPrefBaseSize.width
+
+  const osakaPrefHorizontalToScaleRatio =
+    osakaPrefBaseSize.scale / osakaPrefBaseSize.width
+
+  const osakaPrefSize = {
+    width: elementWidth,
+    height: osakaPrefHorizontalToVerticalRatio * elementWidth,
+    scale: osakaPrefHorizontalToScaleRatio * elementWidth
+  }
   // const ua = window.navigator.userAgent.toLowerCase() // ブラウザ判定 // 未使用のため、コメントアウト
   // scaleはスクリーンの大きさによって変更
-  let scale
+  // let scale
   // let label_font_size // 未使用のため、コメントアウト
   // let label_width // 未使用のため、コメントアウト
   // let label_height // 未使用のため、コメントアウト
   // let font_size // 未使用のため、コメントアウト
 
-  // スマートフォンの時は変数調整
+  // スマートフォンの時は変数調整 // 未使用のためコメントアウト
+  /*
   if (width < 601) {
     scale = 30000
     // label_font_size = '16pt' // 未使用のため、コメントアウト
@@ -149,14 +166,16 @@ function drawOsaka() {
     // label_width = 80 // 未使用のため、コメントアウト
     // font_size = '10pt' // 未使用のため、コメントアウト
   }
+  */
 
   // マップ描画
   const map = d3
     .select('#map')
     .append('svg')
-    .attr('width', width)
-    .attr('height', height)
+    .attr('width', osakaPrefSize.width)
+    .attr('height', osakaPrefSize.height)
     .append('g')
+
   // 同じディレクトリにあるgeojsonファイルをhttp経由で読み込む
   d3.json('osakapref.json')
     .then(function(json) {
@@ -167,12 +186,21 @@ function drawOsaka() {
         .append('div')
         .attr('class', 'tip')
       */
+
+      // データの中心点を計算
+      // refs: https://qiita.com/yuiken/items/1153922ad20be1d26ced
+      const bounds = d3.geoBounds(json)
+      const center = [
+        (bounds[0][0] + bounds[1][0]) / 2,
+        (bounds[0][1] + bounds[1][1]) / 2
+      ]
+
       // 投影を処理する関数を用意する。データからSVGのPATHに変換するため。
       const projection = d3
         .geoMercator()
-        .scale(scale)
-        .center(d3.geoCentroid(json)) // データから中心点を計算 .center(d3.geoCentroid(json))
-        .translate([width / 2, height / 2]) // ブラウザの中央に転移
+        .center(center)
+        .translate([osakaPrefSize.width / 2, osakaPrefSize.height / 2])
+        .scale(osakaPrefSize.scale)
       // pathジェネレータ関数
       const path = d3.geoPath().projection(projection)
       // これがenterしたデータ毎に呼び出されpath要素のd属性にgeoJSONデータから変換した値を入れて市町村境界描画
@@ -288,8 +316,7 @@ $infected-level6: red;
   fill: $infected-level6 !important;
   background-color: $infected-level6;
 }
-
-svg {
-  max-height: 600px;
+.osaka-map {
+  font-size: 0;
 }
 </style>
