@@ -20,7 +20,9 @@
           <tr>
             <td><span class="color-test infected-level4" />16-20</td>
             <td><span class="color-test infected-level5" />21-30</td>
-            <td><span class="color-test infected-level6" />31以上</td>
+            <td>
+              <span class="color-test infected-level6" />31 {{ $t('以上') }}
+            </td>
           </tr>
         </tbody>
       </table>
@@ -35,10 +37,7 @@
 import * as d3 from 'd3'
 import Data from '@/data/data.json'
 import DataView from '@/components/DataView.vue'
-// import IbarakiMap from '@/assets/ibaraki-map.svg'
-// import CityData from '@/data/cities.json'
 
-// let graphY = 400 // 未使用のため、コメントアウト
 const popData = []
 export default {
   components: {
@@ -53,7 +52,7 @@ export default {
   },
   mounted() {
     loadYouseiData()
-    drawOsaka(this.$refs.map.clientWidth)
+    drawOsaka(this, this.$refs.map.clientWidth)
     // const patients = Data.patients.data
     // 市町村の患者人数の連想配列
     // const cityPatientsNumber = {}
@@ -132,7 +131,7 @@ function loadYouseiData() {
 }
 
 // 大阪府描画
-function drawOsaka(elementWidth) {
+function drawOsaka(vm, elementWidth) {
   console.log('start drawOsaka()')
 
   // scale = 10000 のときのwidthとheight(描画後のwidth/heightから取得)
@@ -227,10 +226,11 @@ function drawOsaka(elementWidth) {
           .style('opacity', 0.9)
           .html(
             '<strong>' +
-              popData[d.properties.index].name +
+              vm.$t(popData[d.properties.index].name) +
               '</strong><br>' +
               popData[d.properties.index].count +
-              ' 人'
+              ' ' +
+              vm.$t('人')
           )
           .style('left', d3.event.pageX + 'px')
           .style('top', d3.event.pageY - 45 + 'px')
@@ -238,45 +238,6 @@ function drawOsaka(elementWidth) {
       .on('mouseout', function() {
         tooltip.style('opacity', 0)
       })
-
-    // // 左側にデータ表示
-    // for (let i = 0; i < 43; i++) {
-    //   map
-    //     .append('text')
-    //     .attr({
-    //       x: 20,
-    //       y: i * 13 + 20
-    //     })
-    //     .style('font-size', 12 + 'px')
-    //     .text(popData[i][0] + ':' + popData[i][1])
-    // }
-
-    //   // 市町村名表示
-    //   const xhr = new XMLHttpRequest()
-    //   xhr.onload = function() {
-    //     const tempArray = xhr.responseText.split('\n')
-    //     const csvArray = []
-    //     for (let i = 0; i < tempArray.length; i++) {
-    //       csvArray[i] = tempArray[i].split(',')
-    //       const data = csvArray[i]
-    //       const lonlat = [data[1], data[2]]
-    //       const xy = projection(lonlat)
-    //       map
-    //         .append('text')
-    //         .attr({
-    //           x: xy[0] - 15,
-    //           y: xy[1]
-    //         })
-    //         .style('font-size', 10 + 'px')
-    //         .text(data[0])
-    //     }
-    //   }
-    //   xhr.open('get', 'cityname.csv', true)
-    //   xhr.send(null)
-    // })
-    // .catch(function(error) {
-    //   // エラー処理
-    //   console.log('in drawOsaka() error:', error)
   })
   console.log('end drawOsaka()')
 }
