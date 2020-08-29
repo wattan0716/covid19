@@ -20,7 +20,9 @@
           <tr>
             <td><span class="color-test infected-level4" />16-20</td>
             <td><span class="color-test infected-level5" />21-30</td>
-            <td><span class="color-test infected-level6" />31以上</td>
+            <td>
+              <span class="color-test infected-level6" />31 {{ $t('以上') }}
+            </td>
           </tr>
         </tbody>
       </table>
@@ -35,10 +37,7 @@
 import * as d3 from 'd3'
 import Data from '@/data/data.json'
 import DataView from '@/components/DataView.vue'
-// import IbarakiMap from '@/assets/ibaraki-map.svg'
-// import CityData from '@/data/cities.json'
 
-// let graphY = 400 // 未使用のため、コメントアウト
 const popData = []
 export default {
   components: {
@@ -53,7 +52,7 @@ export default {
   },
   mounted() {
     loadYouseiData()
-    drawOsaka(this.$refs.map.clientWidth)
+    drawOsaka(this, this.$refs.map.clientWidth)
     // const patients = Data.patients.data
     // 市町村の患者人数の連想配列
     // const cityPatientsNumber = {}
@@ -93,28 +92,37 @@ function loadYouseiData() {
     const tempArray = xhr.responseText.split('\n')
     for (let i = 0; i < tempArray.length; i++) {
       const strText = tempArray[i].split(',')
+
+      if (strText.length !== 3) {
+        return
+      }
+
+      const popDataUnit = {}
+      popDataUnit.name = strText[0]
+      popDataUnit.count = strText[1]
+
       // 陽性者数に応じて塗る色を計算
-      if (strText[1] > 99) {
-        strText[2] = 'red'
+      if (popDataUnit.count > 99) {
+        popDataUnit.color = 'red'
       }
-      if (strText[1] <= 99 && strText[1] > 9) {
-        strText[2] = 'deeppink'
+      if (popDataUnit.count <= 99 && popDataUnit.count > 9) {
+        popDataUnit.color = 'deeppink'
       }
-      if (strText[1] <= 9 && strText[1] > 4) {
-        strText[2] = 'magenta'
+      if (popDataUnit.count <= 9 && popDataUnit.count > 4) {
+        popDataUnit.color = 'magenta'
       }
-      if (strText[1] <= 4 && strText[1] > 1) {
-        strText[2] = 'pink'
-      }
-      // eslint-disable-next-line eqeqeq
-      if (strText[1] == 1) {
-        strText[2] = 'lemonchiffon'
+      if (popDataUnit.count <= 4 && popDataUnit.count > 1) {
+        popDataUnit.color = 'pink'
       }
       // eslint-disable-next-line eqeqeq
-      if (strText[1] == 0) {
-        strText[2] = 'white'
+      if (popDataUnit.count == 1) {
+        popDataUnit.color = 'lemonchiffon'
       }
-      popData.push(strText)
+      // eslint-disable-next-line eqeqeq
+      if (popDataUnit.count == 0) {
+        popDataUnit.color = 'white'
+      }
+      popData.push(popDataUnit)
     }
   }
   xhr.open('get', 'yousei.csv', true)
@@ -123,7 +131,7 @@ function loadYouseiData() {
 }
 
 // 大阪府描画
-function drawOsaka(elementWidth) {
+function drawOsaka(vm, elementWidth) {
   console.log('start drawOsaka()')
 
   // scale = 10000 のときのwidthとheight(描画後のwidth/heightから取得)
@@ -177,82 +185,60 @@ function drawOsaka(elementWidth) {
     .append('g')
 
   // 同じディレクトリにあるgeojsonファイルをhttp経由で読み込む
-  d3.json('osakapref.json')
-    .then(function(json) {
-      // 市区町村表示領域を生成
-      /* ツールチップ
-      const tooltip = d3
-        .select('body')
-        .append('div')
-        .attr('class', 'tip')
-      */
+  d3.json('osakapref.json').then(function(json) {
+    // 市区町村表示領域を生成
+    // ツールチップ
+    const tooltip = d3
+      .select('body')
+      .append('div')
+      .attr('class', 'tooltip')
 
-      // データの中心点を計算
-      // refs: https://qiita.com/yuiken/items/1153922ad20be1d26ced
-      const bounds = d3.geoBounds(json)
-      const center = [
-        (bounds[0][0] + bounds[1][0]) / 2,
-        (bounds[0][1] + bounds[1][1]) / 2
-      ]
+    // データの中心点を計算
+    // refs: https://qiita.com/yuiken/items/1153922ad20be1d26ced
+    const bounds = d3.geoBounds(json)
+    const center = [
+      (bounds[0][0] + bounds[1][0]) / 2,
+      (bounds[0][1] + bounds[1][1]) / 2
+    ]
 
-      // 投影を処理する関数を用意する。データからSVGのPATHに変換するため。
-      const projection = d3
-        .geoMercator()
-        .center(center)
-        .translate([osakaPrefSize.width / 2, osakaPrefSize.height / 2])
-        .scale(osakaPrefSize.scale)
-      // pathジェネレータ関数
-      const path = d3.geoPath().projection(projection)
-      // これがenterしたデータ毎に呼び出されpath要素のd属性にgeoJSONデータから変換した値を入れて市町村境界描画
-      map
-        .selectAll('path')
-        .data(json.features)
-        .enter()
-        .append('path')
-        .attr('d', path)
-        // 陽性者に対応した色で境界内を塗る
-        .style('fill', function(d) {
-          return popData[d.properties.index][2]
-        })
-      // 左側にデータ表示
-      for (let i = 0; i < 43; i++) {
-        map
-          .append('text')
-          .attr({
-            x: 20,
-            y: i * 13 + 20
-          })
-          .style('font-size', 12 + 'px')
-          .text(popData[i][0] + ':' + popData[i][1])
-      }
+    // 投影を処理する関数を用意する。データからSVGのPATHに変換するため。
+    const projection = d3
+      .geoMercator()
+      .center(center)
+      .translate([osakaPrefSize.width / 2, osakaPrefSize.height / 2])
+      .scale(osakaPrefSize.scale)
+    // pathジェネレータ関数
+    const path = d3.geoPath().projection(projection)
+    // これがenterしたデータ毎に呼び出されpath要素のd属性にgeoJSONデータから変換した値を入れて市町村境界描画
 
-      // 市町村名表示
-      const xhr = new XMLHttpRequest()
-      xhr.onload = function() {
-        const tempArray = xhr.responseText.split('\n')
-        const csvArray = []
-        for (let i = 0; i < tempArray.length; i++) {
-          csvArray[i] = tempArray[i].split(',')
-          const data = csvArray[i]
-          const lonlat = [data[1], data[2]]
-          const xy = projection(lonlat)
-          map
-            .append('text')
-            .attr({
-              x: xy[0] - 15,
-              y: xy[1]
-            })
-            .style('font-size', 10 + 'px')
-            .text(data[0])
-        }
-      }
-      xhr.open('get', 'cityname.csv', true)
-      xhr.send(null)
-    })
-    .catch(function(error) {
-      // エラー処理
-      console.log('in drawOsaka() error:', error)
-    })
+    map
+      .selectAll('path')
+      .data(json.features)
+      .enter()
+      .append('path')
+      .attr('d', path)
+      // 陽性者に対応した色で境界内を塗る
+      .style('fill', function(d) {
+        return popData[d.properties.index].color
+      })
+      .on('mouseover, mousemove', function(d) {
+        tooltip
+          .style('opacity', 0.9)
+          .html(
+            '<strong>' +
+              vm.$t(popData[d.properties.index].name) +
+              '</strong><br>' +
+              popData[d.properties.index].count +
+              ' ' +
+              vm.$t('人')
+          )
+          .style('left', d3.event.pageX + 'px')
+          .style('top', d3.event.pageY - 45 + 'px')
+      })
+      .on('mouseout', function() {
+        tooltip.style('opacity', 0)
+      })
+  })
   console.log('end drawOsaka()')
 }
 </script>
@@ -319,4 +305,19 @@ $infected-level6: red;
 .osaka-map {
   font-size: 0;
 }
+
+.tooltip {
+  background: rgba(0, 0, 0, 0.9);
+  font-size: 11px;
+  color: #fff;
+  border-radius: 4px;
+  padding: 4px;
+  transition: opacity 0.2s;
+  position: absolute;
+  opacity: 0;
+}
+
+//path:hover {
+//  opacity: 0.5;
+//}
 </style>
