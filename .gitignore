@@ -93,3 +93,5 @@ sw.*
 
 # Netlify
 .netlify
+
+secret.env
