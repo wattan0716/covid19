@@ -6,14 +6,26 @@
     <v-data-table
       :headers="chartData.headers"
       :items="chartData.datasets"
-      :items-per-page="-1"
-      :hide-default-footer="true"
       :height="240"
-      :fixed-header="true"
+      fixed-header
       :mobile-breakpoint="0"
-      class="cardTable"
       :custom-sort="customSort"
-    />
+      :footer-props="{
+        'items-per-page-options': [15, 30, 50, 100, 200, 300, -1],
+        'items-per-page-text': $t('1ページ当たり')
+      }"
+      class="cardTable"
+    >
+      <template slot="footer.page-text" slot-scope="props">
+        {{
+          $t('{itemsLength} 項目中 {pageStart} - {pageStop}', {
+            itemsLength: props.itemsLength,
+            pageStart: props.pageStart,
+            pageStop: props.pageStop
+          })
+        }}
+      </template>
+    </v-data-table>
     <div class="note">
       {{ $t('※退院とは新型コロナウイルス感染症が治癒した者') }}<br />
       {{ $t('※退院には死亡退院を含む') }}
@@ -45,6 +57,9 @@
     tbody {
       tr {
         color: $gray-1;
+        th {
+          font-weight: normal;
+        }
         td {
           padding: 8px 10px;
           height: auto;
@@ -65,12 +80,32 @@
         }
       }
     }
+    .v-select {
+      margin-left: 10px;
+    }
+    &:focus {
+      outline: dotted $gray-3 1px;
+    }
+  }
+  .v-data-table__wrapper {
+    box-shadow: 0 -20px 12px -12px #0003 inset;
+  }
+  &.v-data-footer__pagination {
+    margin-left: 0;
+    margin-right: 5px;
   }
 }
 .note {
   padding: 8px;
   font-size: 12px;
   color: #808080;
+}
+// FIXME: スタイルの影響が全体に及んでいるので修正が必要
+.v-menu__content {
+  width: 60px;
+  .v-list-item {
+    padding: 0 8px;
+  }
 }
 </style>
 
