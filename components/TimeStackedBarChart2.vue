@@ -1,15 +1,53 @@
 <template>
   <data-view :title="title" :title-id="titleId" :date="date">
     <template v-slot:button>
-      <data-selector v-model="dataKind" />
+      <data-selector v-model="dataKind" :target-id="chartId" />
     </template>
-    <bar
-      :chart-id="chartId"
-      :chart-data="displayData"
-      :options="options"
-      :height="240"
-    />
-    <div class="note">
+    <ul
+      :class="$style.GraphLegend"
+      :style="{ display: canvas ? 'block' : 'none' }"
+    >
+      <li v-for="(item, i) in items" :key="i" @click="onClickLegend(i)">
+        <button>
+          <div
+            :style="{
+              backgroundColor: colorArray[i]
+            }"
+          />
+          <span
+            :style="{
+              textDecoration: displayLegends[i] ? 'none' : 'line-through'
+            }"
+            >{{ item }}</span
+          >
+        </button>
+      </li>
+    </ul>
+    <scrollable-chart v-show="canvas" :display-data="displayData">
+      <template v-slot:chart="{ chartWidth }">
+        <bar
+          :ref="'barChart'"
+          :chart-id="chartId"
+          :chart-data="displayData"
+          :options="displayOption"
+          :display-legends="displayLegends"
+          :height="240"
+          :width="chartWidth"
+        />
+      </template>
+      <template v-slot:sticky-chart>
+        <bar
+          class="sticky-legend"
+          :chart-id="`${chartId}-header`"
+          :chart-data="displayDataHeader"
+          :options="displayOptionHeader"
+          :plugins="yAxesBgPlugin"
+          :display-legends="displayLegends"
+          :height="240"
+        />
+      </template>
+    </scrollable-chart>
+    <div :class="$style.note">
       {{ $t('※報道提供における本日判明数での集計') }}
     </div>
     <template v-slot:infoPanel>
@@ -22,21 +60,20 @@
   </data-view>
 </template>
 
-<style>
-.note {
-  padding: 8px;
-  font-size: 12px;
-  color: #808080;
-}
-</style>
-
 <script>
 import DataView from '@/components/DataView.vue'
 import DataSelector from '@/components/DataSelector.vue'
 import DataViewBasicInfoPanel from '@/components/DataViewBasicInfoPanel.vue'
+import ScrollableChart from '@/components/ScrollableChart.vue'
+import { yAxesBgPlugin } from '@/plugins/vue-chart'
 
 export default {
-  components: { DataView, DataSelector, DataViewBasicInfoPanel },
+  components: {
+    DataView,
+    DataSelector,
+    DataViewBasicInfoPanel,
+    ScrollableChart
+  },
   props: {
     title: {
       type: String,
@@ -77,13 +114,19 @@ export default {
       type: String,
       required: false,
       default: ''
+    },
+    yAxesBgPlugin: {
+      type: Array,
+      default: () => yAxesBgPlugin
     }
   },
-  data() {
-    return {
-      dataKind: 'transition'
-    }
-  },
+  data: () => ({
+    dataKind: 'transition',
+    displayLegends: [true, true],
+    colorArray: ['#364c97', '#0076eb'],
+    canvas: true,
+    isSmall: false
+  }),
   computed: {
     displayInfo() {
       if (this.dataKind === 'transition') {
@@ -162,7 +205,7 @@ export default {
         })
       }
     },
-    options() {
+    displayOption() {
       const unit = this.unit
       const sumArray = this.eachArraySum(this.chartData)
       const data = this.chartData
@@ -170,7 +213,7 @@ export default {
         return this.cumulative(item)
       })
       const cumulativeSumArray = this.eachArraySum(cumulativeData)
-      return {
+      const options = {
         tooltips: {
           displayColors: false,
           callbacks: {
@@ -195,10 +238,9 @@ export default {
             }
           }
         },
-        responsive: true,
         maintainAspectRatio: false,
         legend: {
-          display: true
+          display: false
         },
         scales: {
           xAxes: [
@@ -213,11 +255,12 @@ export default {
                 maxTicksLimit: 20,
                 fontColor: '#808080',
                 maxRotation: 0,
-                minRotation: 0,
                 callback: label => {
                   return label.split('/')[1]
                 }
               }
+              // #2384: If you set "type" to "time", make sure that the bars at both ends are not hidden.
+              // #2384: typeをtimeに設定する時はグラフの両端が見切れないか確認してください
             },
             {
               id: 'month',
@@ -232,25 +275,108 @@ export default {
                 fontSize: 11,
                 fontColor: '#808080',
                 padding: 3,
-                fontStyle: 'bold',
-                callback: label => {
-                  const monthStringArry = [
-                    'Jan',
-                    'Feb',
-                    'Mar',
-                    'Apr',
-                    'May',
-                    'Jun',
-                    'Jul',
-                    'Aug',
-                    'Sep',
-                    'Oct',
-                    'Nov',
-                    'Dec'
-                  ]
-                  const month = monthStringArry.indexOf(label.split(' ')[0]) + 1
-                  return month + '月'
+                fontStyle: 'bold'
+              },
+              type: 'time',
+              time: {
+                unit: 'month',
+                parser: 'M/D',
+                displayFormats: {
+                  month: 'MMM'
                 }
+              }
+            }
+          ],
+          yAxes: [
+            {
+              stacked: true,
+              gridLines: {
+                display: true,
+                color: '#E5E5E5'
+              },
+              ticks: {
+                suggestedMin: 0,
+                suggestedMax: this.scaledTicksYAxisMax,
+                maxTicksLimit: 8,
+                fontColor: '#808080'
+              }
+            }
+          ]
+        }
+      }
+      if (this.$route.query.ogp === 'true') {
+        Object.assign(options, { animation: { duration: 0 } })
+      }
+      return options
+    },
+    displayDataHeader() {
+      let n = 0
+      let max = 0
+      for (const i in this.displayData.datasets[0].data) {
+        const current =
+          this.displayData.datasets[0].data[i] +
+          this.displayData.datasets[1].data[i]
+        if (current > max) {
+          max = current
+          n = Number(i)
+        }
+      }
+      return {
+        labels: ['2020/1/1'],
+        datasets: [
+          {
+            data: [this.displayData.datasets[0].data[n]],
+            backgroundColor: 'transparent',
+            borderWidth: 0
+          },
+          {
+            data: [this.displayData.datasets[1].data[n]],
+            backgroundColor: 'transparent',
+            borderWidth: 0
+          }
+        ]
+      }
+    },
+    displayOptionHeader() {
+      return {
+        maintainAspectRatio: false,
+        legend: {
+          display: false
+        },
+        tooltips: { enabled: false },
+        scales: {
+          xAxes: [
+            {
+              id: 'day',
+              stacked: true,
+              gridLines: {
+                display: false
+              },
+              ticks: {
+                fontSize: 9,
+                maxTicksLimit: 20,
+                fontColor: 'transparent',
+                maxRotation: 0,
+                minRotation: 0,
+                callback: label => {
+                  return label.split('/')[1]
+                }
+              }
+            },
+            {
+              id: 'month',
+              stacked: true,
+              gridLines: {
+                drawOnChartArea: false,
+                drawTicks: false, // true -> false
+                drawBorder: false,
+                tickMarkLength: 10
+              },
+              ticks: {
+                fontSize: 11,
+                fontColor: 'transparent', // #808080
+                padding: 13, // 3 + 10(tickMarkLength)
+                fontStyle: 'bold'
               },
               type: 'time',
               time: {
@@ -260,24 +386,61 @@ export default {
           ],
           yAxes: [
             {
-              location: 'bottom',
               stacked: true,
               gridLines: {
                 display: true,
+                drawOnChartArea: false,
                 color: '#E5E5E5'
               },
               ticks: {
                 suggestedMin: 0,
                 maxTicksLimit: 8,
-                fontColor: '#808080'
+                fontColor: '#808080',
+                suggestedMax: this.scaledTicksYAxisMax
               }
             }
           ]
-        }
+        },
+        animation: { duration: 0 }
       }
+    },
+    scaledTicksYAxisMax() {
+      let max = 0
+      for (const i in this.chartData[0]) {
+        max = Math.max(max, this.chartData[0][i] + this.chartData[1][i])
+      }
+      return max
     }
   },
+  created() {
+    this.canvas = process.browser
+    this.dataKind =
+      this.$route.query.embed && this.$route.query.dataKind === 'cumulative'
+        ? 'cumulative'
+        : 'transition'
+  },
+  mounted() {
+    const barChart = this.$refs.barChart
+    const barElement = barChart.$el
+    const canvas = barElement.querySelector('canvas')
+    const labelledbyId = `${this.titleId}-graph`
+
+    if (canvas) {
+      canvas.setAttribute('role', 'img')
+      canvas.setAttribute('aria-labelledby', labelledbyId)
+    }
+
+    window.addEventListener('resize', this.handleResize)
+    this.handleResize()
+  },
+  destroyed() {
+    window.removeEventListener('resize', this.handleResize)
+  },
   methods: {
+    onClickLegend(i) {
+      this.displayLegends[i] = !this.displayLegends[i]
+      this.displayLegends = this.displayLegends.slice()
+    },
     cumulative(array) {
       const cumulativeArray = []
       let patSum = 0
@@ -334,15 +497,43 @@ export default {
         default:
           return `${dayBeforeRatioLocaleString}`
       }
+    },
+    handleResize() {
+      this.isSmall = window.innerWidth <= 400
     }
   }
 }
 </script>
 
-<style lang="scss" scoped>
-.Graph-Desc {
-  margin: 10px 0;
+<style module lang="scss">
+.note {
+  padding: 8px;
   font-size: 12px;
-  color: $gray-3;
+  color: #808080;
+}
+
+.Graph {
+  &Legend {
+    text-align: center;
+    list-style: none;
+    padding: 0 !important;
+    li {
+      display: inline-block;
+      margin: 0 3px;
+      div {
+        height: 12px;
+        margin: 2px 4px;
+        width: 40px;
+        display: inline-block;
+        vertical-align: middle;
+        border-width: 1px;
+        border-style: solid;
+      }
+      button {
+        color: $gray-3;
+        @include font-size(12);
+      }
+    }
+  }
 }
 </style>
