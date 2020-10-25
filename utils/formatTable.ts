@@ -49,6 +49,6 @@ export default (data: DataType[]) => {
     }
     tableDate.datasets.push(TableRow)
   })
-  tableDate.datasets.sort((a, b) => (a === b ? 0 : a < b ? 1 : -1))
+  tableDate.datasets.sort((a, b) => b.項番 - a.項番)
   return tableDate
 }
