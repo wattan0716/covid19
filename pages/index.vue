@@ -40,6 +40,7 @@
           :date="Data.patients.date"
           :info="sumInfoOfPatients"
           :unit="$t('人')"
+          :url="$t('./data/patients.json')"
         />
       </v-col>
       <v-col cols="12" md="6" class="DataCard">

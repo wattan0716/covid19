@@ -20,6 +20,7 @@ class DataJson:
         self.data_json = {}
         # 陽性者の属性
         self.patients_json = {"date": "", "data": []}
+        self.patients_open_data_json = {"date": "", "data": []}
         # 陽性者数
         self.patients_summary_json = {"date": "", "data": []}
         # 検査実施件数
@@ -119,6 +120,7 @@ class DataJson:
         print("陽性者の取得START")
         # 「陽性者」の取得
         self.patients_json["date"] = self.update_json
+        self.patients_open_data_json["date"] = self.update_json
         records = self.get_kintone_records('818', 'order by 番号 asc')
         for record in records['records']:
             data = {}
@@ -138,6 +140,15 @@ class DataJson:
                 ) else ""
             data["date"] = record['報道提供日']['value']
             self.patients_json["data"].append(data)
+            # オープンデータ用
+            data = {}
+            data["番号"] = int(record['番号']['value'])
+            data["報道提供日"] = record['報道提供日']['value']
+            data["年代"] = record['年代']['value']
+            data["性別"] = record['性別']['value']
+            data["居住地"] = record['居住地']['value']
+            data["退院"] = record['退院']['value']
+            self.patients_open_data_json["data"].append(data)
 
         print("検査件数等の取得START")
         # 「検査件数等」の取得
@@ -274,7 +285,8 @@ class DataJson:
             "transmission_route_summary": self.transmission_route_json,
             "treated_summary": self.treated_summary_json,
             "lastUpdate": self.lastUpdate_json,
-            "main_summary": self.main_summary_json
+            "main_summary": self.main_summary_json,
+            "patients_open": self.patients_open_data_json
         }
         if self.data_json['patients']['date'] == self.current_data_json['patients']['date']:
             self.data_json = self.current_data_json
@@ -285,6 +297,17 @@ class DataJson:
 
     def dumps_json(self, file_name: str, json_data: Dict) -> None:
         with codecs.open("./data/" + file_name, "w", "utf-8") as f:
+            f.write(
+                dumps(
+                    json_data,
+                    ensure_ascii=False,
+                    indent=4,
+                    separators=(',', ': ')
+                )
+            )
+
+    def dumps_open_json(self, file_name: str, json_data: Dict) -> None:
+        with codecs.open("./static/data/" + file_name, "w", "utf-8") as f:
             f.write(
                 dumps(
                     json_data,
@@ -305,4 +328,7 @@ class DataJson:
 
 
 if __name__ == "__main__":
-    DataJson().dumps_json('data.json', DataJson().get_data())
+    data = DataJson().get_data()
+    patients_open_data = data.pop('patients_open')
+    DataJson().dumps_json('data.json', data)
+    DataJson().dumps_open_json('patients.json', patients_open_data)
