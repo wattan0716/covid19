@@ -36,24 +36,24 @@ export default Vue.extend({
   props: {
     to: {
       type: String,
-      required: true,
+      required: true
     },
     showIcon: {
       type: Boolean,
-      default: null,
+      default: null
     },
     iconSize: {
       type: Number,
-      default: 12,
+      default: 12
     },
     iconType: {
       type: String,
-      default: 'mdi-open-in-new',
+      default: 'mdi-open-in-new'
     },
     iconClass: {
       type: String,
-      default: '',
-    },
+      default: ''
+    }
   },
   computed: {
     isExternal(): boolean {
@@ -68,12 +68,12 @@ export default Vue.extend({
           href: this.to,
           target: '_blank',
           rel: 'noopener noreferrer',
-          class: 'ExternalLink',
+          class: 'ExternalLink'
         }
       } else {
         return {
           to: this.to,
-          class: 'Link',
+          class: 'Link'
         }
       }
     },
@@ -83,8 +83,8 @@ export default Vue.extend({
     },
     _iconSize(): string {
       return `${this.iconSize / 10}rem`
-    },
-  },
+    }
+  }
 })
 </script>
 
