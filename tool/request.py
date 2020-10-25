@@ -25,12 +25,16 @@ class DataJson:
         self.patients_summary_json = {"date": "", "data": []}
         # 検査実施件数
         self.inspections_summary_json = {"date": "", "data": []}
+        # 各種サマリー（オープンデータ）
+        self.summary_open_data_json = {"date": "", "data": []}
         # 府民向け相談窓口への相談件数
         self.contacts1_summary_json = {"date": "", "data": []}
+        self.contacts1_open_data_json = {"date": "", "data": []}
         # 新型コロナ受診相談センターへの相談件数
         self.contacts2_summary_json = {
             "date": "", "data": {"府管轄保健所": [], "政令中核市保健所": []}, "labels": []
         }
+        self.contacts2_open_data_json = {"date": "", "data": []}
         # 感染経路不明者（リンク不明者）
         self.transmission_route_json = {
             "date": "", "data": {"感染経路不明者": [], "感染経路明確者": []}, "labels": []
@@ -156,6 +160,7 @@ class DataJson:
         self.inspections_summary_json["date"] = self.update_json
         self.transmission_route_json["date"] = self.update_json
         self.treated_summary_json["date"] = self.update_json
+        self.summary_open_data_json["date"] = self.update_json
         records = self.get_kintone_records('821', 'order by 日付 asc')
         treated_total = 0
         patients_total = 0
@@ -190,6 +195,20 @@ class DataJson:
             treated_total += int(record['検査件数']['value'])
             # 陽性者数
             patients_total += int(record['陽性人数']['value'])
+            # オープンデータ用
+            data = {}
+            data['日付'] = record['日付']['value']
+            data['検査件数'] = int(record['検査件数']['value'])
+            data['陽性人数'] = int(record['陽性人数']['value'])
+            data['陽性累計'] = int(record['陽性累計']['value'])
+            data['現在陽性者数'] = int(record['現在陽性者数']['value'])
+            data['退院'] = int(record['退院']['value'])
+            data['退院済累計'] = int(record['退院済累計']['value'])
+            data['退院判明'] = int(record['退院判明']['value'])
+            data['退院判明累計'] = int(record['退院判明累計']['value'])
+            data['死亡'] = int(record['死亡']['value'])
+            data['リンク不明者'] = int(record['リンク不明者']['value'])
+            self.summary_open_data_json["data"].append(data)
 
         # 検査実施人数、陽性患者数
         self.main_summary_json["value"] = treated_total
@@ -205,6 +224,12 @@ class DataJson:
             self.contacts1_summary_json['data'].append(data)
             d_date = datetime.strptime(record['日付']['value'], "%Y-%m-%d")
             self.contacts1_summary_json["date"] = d_date.strftime('%Y/%m/%d') + ' 00:00'
+            # オープンデータ用
+            data = {}
+            data['日付'] = record['日付']['value']
+            data['相談件数'] = int(record['相談件数']['value'])
+            self.contacts1_open_data_json['data'].append(data)
+            self.contacts1_open_data_json["date"] = record['日付']['value']
 
         print("新型コロナ受診相談センターへの相談件数START")
         # 「新型コロナ受診相談センターへの相談件数」の取得
@@ -222,6 +247,13 @@ class DataJson:
             )
             d_date = datetime.strptime(record['日付']['value'], "%Y-%m-%d")
             self.contacts2_summary_json["date"] = d_date.strftime('%Y/%m/%d') + ' 00:00'
+            # オープンデータ用
+            data = {}
+            data['日付'] = record['日付']['value']
+            data['府管轄保健所'] = int(record['府管轄保健所']['value'])
+            data['政令中核市'] = int(record['政令中核市']['value'])
+            self.contacts2_open_data_json['data'].append(data)
+            self.contacts2_open_data_json["date"] = record['日付']['value']
 
         print("検査陽性者の状況の取得START")
         # 「検査陽性者の状況」取得
@@ -286,7 +318,10 @@ class DataJson:
             "treated_summary": self.treated_summary_json,
             "lastUpdate": self.lastUpdate_json,
             "main_summary": self.main_summary_json,
-            "patients_open": self.patients_open_data_json
+            "patients_open": self.patients_open_data_json,
+            "summary_open": self.summary_open_data_json,
+            "contacts1_open": self.contacts1_open_data_json,
+            "contacts2_open": self.contacts2_open_data_json
         }
         if self.data_json['patients']['date'] == self.current_data_json['patients']['date']:
             self.data_json = self.current_data_json
@@ -329,6 +364,20 @@ class DataJson:
 
 if __name__ == "__main__":
     data = DataJson().get_data()
-    patients_open_data = data.pop('patients_open')
+    if 'patients_open' in data:
+        patients_open_data = data.pop('patients_open')
+        DataJson().dumps_open_json('patients.json', patients_open_data)
+
+    if 'summary_open' in data:
+        summary_open_data = data.pop('summary_open')
+        DataJson().dumps_open_json('summary.json', summary_open_data)
+
+    if 'contacts1_open' in data:
+        contacts1_open_data = data.pop('contacts1_open')
+        DataJson().dumps_open_json('contacts1.json', contacts1_open_data)
+
+    if 'contacts2_open' in data:
+        contacts2_open_data = data.pop('contacts2_open')
+        DataJson().dumps_open_json('contacts2.json', contacts2_open_data)
+
     DataJson().dumps_json('data.json', data)
-    DataJson().dumps_open_json('patients.json', patients_open_data)

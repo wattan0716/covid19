@@ -29,6 +29,7 @@
           :chart-data="patientsGraph"
           :date="Data.patients.date"
           :unit="$t('人')"
+          :url="$t('./data/summary.json')"
         />
       </v-col>
       <v-col cols="12" md="6" class="DataCard">
@@ -52,6 +53,7 @@
           :date="Data.treated_summary.date"
           :note="$t('（注）退院者とは新型コロナウイルス感染症が治癒した者')"
           :unit="$t('人')"
+          :url="$t('./data/summary.json')"
         />
       </v-col>
       <v-col cols="12" md="6" class="DataCard">
@@ -62,6 +64,7 @@
           :chart-data="inspectionsGraph"
           :date="Data.inspections_summary.date"
           :unit="$t('件.tested')"
+          :url="$t('./data/summary.json')"
         />
       </v-col>
       <v-col cols="12" md="6" class="DataCard">
@@ -74,6 +77,7 @@
           :items="transmissionRouteItems"
           :labels="transmissionRouteLabels"
           :unit="$t('人')"
+          :url="$t('./data/summary.json')"
         />
       </v-col>
       <v-col cols="12" md="6" class="DataCard">
@@ -86,6 +90,7 @@
           :items="contacts2Items"
           :labels="contacts2Labels"
           :unit="$t('件.reports')"
+          :url="$t('./data/contacts2.json')"
         />
       </v-col>
       <v-col cols="12" md="6" class="DataCard">
@@ -96,6 +101,7 @@
           :chart-data="contactsGraph"
           :date="Data.contacts1_summary.date"
           :unit="$t('件.reports')"
+          :url="$t('./data/contacts1.json')"
         />
       </v-col>
     </v-row>
