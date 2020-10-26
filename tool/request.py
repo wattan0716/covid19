@@ -1,5 +1,6 @@
 import codecs
 import os
+import pandas as pd
 import requests
 import urllib.parse
 from json import dumps, load
@@ -342,15 +343,8 @@ class DataJson:
             )
 
     def dumps_open_json(self, file_name: str, json_data: Dict) -> None:
-        with codecs.open("./static/data/" + file_name, "w", "utf-8") as f:
-            f.write(
-                dumps(
-                    json_data,
-                    ensure_ascii=False,
-                    indent=4,
-                    separators=(',', ': ')
-                )
-            )
+        df = pd.DataFrame(json_data['data'])
+        df.to_csv("./static/data/" + file_name, encoding='shift-jis', index=False)
 
     def Excel_date(self, date1):
         temp = datetime(1899, 12, 30)
@@ -366,18 +360,18 @@ if __name__ == "__main__":
     data = DataJson().get_data()
     if 'patients_open' in data:
         patients_open_data = data.pop('patients_open')
-        DataJson().dumps_open_json('patients.json', patients_open_data)
+        DataJson().dumps_open_json('patients.csv', patients_open_data)
 
     if 'summary_open' in data:
         summary_open_data = data.pop('summary_open')
-        DataJson().dumps_open_json('summary.json', summary_open_data)
+        DataJson().dumps_open_json('summary.csv', summary_open_data)
 
     if 'contacts1_open' in data:
         contacts1_open_data = data.pop('contacts1_open')
-        DataJson().dumps_open_json('contacts1.json', contacts1_open_data)
+        DataJson().dumps_open_json('contacts1.csv', contacts1_open_data)
 
     if 'contacts2_open' in data:
         contacts2_open_data = data.pop('contacts2_open')
-        DataJson().dumps_open_json('contacts2.json', contacts2_open_data)
+        DataJson().dumps_open_json('contacts2.csv', contacts2_open_data)
 
     DataJson().dumps_json('data.json', data)
