@@ -37,6 +37,9 @@
         :unit="$t('人')"
       />
     </template>
+    <template v-slot:footer>
+      <open-data-link :url="url" />
+    </template>
   </data-view>
 </template>
 
@@ -112,11 +115,12 @@
 <script>
 import DataView from '@/components/DataView.vue'
 import DataViewBasicInfoPanel from '@/components/DataViewBasicInfoPanel.vue'
+import OpenDataLink from '@/components/OpenDataLink.vue'
 
 const excludeAges = ['就学児', '未就学児']
 
 export default {
-  components: { DataView, DataViewBasicInfoPanel },
+  components: { DataView, DataViewBasicInfoPanel, OpenDataLink },
   props: {
     title: {
       type: String,
