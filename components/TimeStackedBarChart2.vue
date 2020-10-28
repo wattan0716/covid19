@@ -1,5 +1,5 @@
 <template>
-  <data-view :title="title" :title-id="titleId" :date="date">
+  <data-view :title="title" :title-id="titleId" :date="date" :url="url">
     <template v-slot:button>
       <data-selector v-model="dataKind" :target-id="chartId" />
     </template>
@@ -57,6 +57,9 @@
         :unit="displayInfo.unit"
       />
     </template>
+    <template v-slot:footer>
+      <open-data-link :url="url" />
+    </template>
   </data-view>
 </template>
 
@@ -64,6 +67,7 @@
 import DataView from '@/components/DataView.vue'
 import DataSelector from '@/components/DataSelector.vue'
 import DataViewBasicInfoPanel from '@/components/DataViewBasicInfoPanel.vue'
+import OpenDataLink from '@/components/OpenDataLink.vue'
 import ScrollableChart from '@/components/ScrollableChart.vue'
 import { yAxesBgPlugin } from '@/plugins/vue-chart'
 
@@ -72,7 +76,8 @@ export default {
     DataView,
     DataSelector,
     DataViewBasicInfoPanel,
-    ScrollableChart
+    ScrollableChart,
+    OpenDataLink
   },
   props: {
     title: {
@@ -111,6 +116,11 @@ export default {
       default: () => []
     },
     unit: {
+      type: String,
+      required: false,
+      default: ''
+    },
+    url: {
       type: String,
       required: false,
       default: ''
