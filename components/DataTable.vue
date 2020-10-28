@@ -27,7 +27,6 @@
       </template>
     </v-data-table>
     <div class="note">
-      {{ $t('※退院とは新型コロナウイルス感染症が治癒した者') }}<br />
       {{ $t('※退院には死亡退院を含む') }}
     </div>
     <template v-slot:infoPanel>
