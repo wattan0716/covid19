@@ -51,7 +51,6 @@
           :chart-id="'time-bar-chart-inspections'"
           :chart-data="treatedGraph"
           :date="Data.treated_summary.date"
-          :note="$t('（注）退院者とは新型コロナウイルス感染症が治癒した者')"
           :unit="$t('人')"
           :url="$t('./data/summary.csv')"
         />
