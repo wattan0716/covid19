@@ -152,7 +152,9 @@ class DataJson:
             data["年代"] = record['年代']['value']
             data["性別"] = record['性別']['value']
             data["居住地"] = record['居住地']['value']
-            data["退院"] = record['退院']['value']
+            data["退院・解除"] = "○" if any(
+                    x in record['退院']['value'] for x in ("退院", "解除")
+                ) else ""
             self.patients_open_data_json["data"].append(data)
 
         print("検査件数等の取得START")
