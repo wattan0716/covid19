@@ -88,6 +88,11 @@
           :date="Data.contacts2_summary.date"
           :items="contacts2Items"
           :labels="contacts2Labels"
+          :note="
+            $t(
+              '※各自治体からの報告状況により数値が後日更新される場合があります。'
+            )
+          "
           :unit="$t('件.reports')"
           :url="$t('./data/contacts2.csv')"
         />
