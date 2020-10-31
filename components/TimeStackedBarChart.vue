@@ -47,6 +47,9 @@
         />
       </template>
     </scrollable-chart>
+    <div class="note">
+      {{ note }}
+    </div>
     <template v-slot:infoPanel>
       <data-view-basic-info-panel
         :l-text="displayInfo.lText"
@@ -59,6 +62,14 @@
     </template>
   </data-view>
 </template>
+
+<style>
+.note {
+  padding: 8px;
+  font-size: 12px;
+  color: #808080;
+}
+</style>
 
 <script>
 import DataView from '@/components/DataView.vue'
@@ -113,6 +124,11 @@ export default {
       default: () => []
     },
     unit: {
+      type: String,
+      required: false,
+      default: ''
+    },
+    note: {
       type: String,
       required: false,
       default: ''
