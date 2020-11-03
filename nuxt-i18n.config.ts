@@ -27,13 +27,13 @@ export default {
       file: 'en.json',
       description: 'English'
     },
-    // {
-    //   code: 'zh-cn',
-    //   name: '简体中文',
-    //   iso: 'zh-CN',
-    //   file: 'zh_CN.json',
-    //   description: 'Simplified Chinese'
-    // },
+    {
+      code: 'zh-cn',
+      name: '简体中文',
+      iso: 'zh-CN',
+      file: 'zh_CN.json',
+      description: 'Simplified Chinese'
+    },
     // {
     //   code: 'zh-tw',
     //   name: '繁體中文',
