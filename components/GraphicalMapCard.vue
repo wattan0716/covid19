@@ -292,4 +292,9 @@ $infected-level6: red;
 //path:hover {
 //  opacity: 0.5;
 //}
+
+#map path {
+  stroke: #333;
+  stroke-width: 1px;
+}
 </style>
