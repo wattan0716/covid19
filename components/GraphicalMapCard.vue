@@ -39,6 +39,9 @@ import Data from '@/data/data.json'
 import DataView from '@/components/DataView.vue'
 
 const popData = []
+// 市町村の患者人数の連想配列
+const cityPatientsNumber = {}
+
 export default {
   components: {
     // IbarakiMap,
@@ -53,80 +56,49 @@ export default {
   mounted() {
     loadYouseiData()
     drawOsaka(this, this.$refs.map.clientWidth)
-    // const patients = Data.patients.data
-    // 市町村の患者人数の連想配列
-    // const cityPatientsNumber = {}
-    // for (const key of patients) {
-    //   cityPatientsNumber[key.居住地] = patients.filter(function(x) {
-    //     return x.居住地 === key.居住地
-    //   }).length
-    // }
-
-    // CityData.forEach(element => {
-    //   if (!cityPatientsNumber[element.city]) {
-    //     return
-    //   }
-    //   const targetElement = document.getElementById(
-    //     'ibaraki-map_svg__' + element.Romaji
-    //   )
-    //   if (cityPatientsNumber[element.city] <= 5)
-    //     targetElement.classList.add('infected-level1')
-    //   else if (cityPatientsNumber[element.city] <= 10)
-    //     targetElement.classList.add('infected-level2')
-    //   else if (cityPatientsNumber[element.city] <= 15)
-    //     targetElement.classList.add('infected-level3')
-    //   else if (cityPatientsNumber[element.city] <= 20)
-    //     targetElement.classList.add('infected-level4')
-    //   else if (cityPatientsNumber[element.city] <= 30)
-    //     targetElement.classList.add('infected-level5')
-    //   else targetElement.classList.add('infected-level6')
-    // })
   }
 }
 
 function loadYouseiData() {
   console.log('start loadYouseiData()')
 
-  const xhr = new XMLHttpRequest()
-  xhr.onload = function() {
-    const tempArray = xhr.responseText.split('\n')
-    for (let i = 0; i < tempArray.length; i++) {
-      const strText = tempArray[i].split(',')
+  const patients = Data.patients.data
 
-      if (strText.length !== 3) {
-        return
-      }
-
-      const popDataUnit = {}
-      popDataUnit.name = strText[0]
-      popDataUnit.count = strText[1]
-
-      // 陽性者数に応じて塗る色を計算
-      if (popDataUnit.count > 99) {
-        popDataUnit.color = 'red'
-      }
-      if (popDataUnit.count <= 99 && popDataUnit.count > 9) {
-        popDataUnit.color = 'deeppink'
-      }
-      if (popDataUnit.count <= 9 && popDataUnit.count > 4) {
-        popDataUnit.color = 'magenta'
-      }
-      if (popDataUnit.count <= 4 && popDataUnit.count > 1) {
-        popDataUnit.color = 'pink'
-      }
-      // eslint-disable-next-line eqeqeq
-      if (popDataUnit.count == 1) {
-        popDataUnit.color = 'lemonchiffon'
-      }
-      // eslint-disable-next-line eqeqeq
-      if (popDataUnit.count == 0) {
-        popDataUnit.color = 'white'
-      }
-      popData.push(popDataUnit)
-    }
+  for (const key of patients) {
+    cityPatientsNumber[key.居住地] = patients.filter(function(x) {
+      return x.居住地 === key.居住地
+    }).length
   }
-  xhr.open('get', 'yousei.csv', true)
-  xhr.send(null)
+
+  for (const key in cityPatientsNumber) {
+    const popDataUnit = {}
+    popDataUnit.name = key
+    popDataUnit.count = cityPatientsNumber[key]
+
+    // 陽性者数に応じて塗る色を計算
+    if (popDataUnit.count > 99) {
+      popDataUnit.color = 'red'
+    }
+    if (popDataUnit.count <= 99 && popDataUnit.count > 9) {
+      popDataUnit.color = 'deeppink'
+    }
+    if (popDataUnit.count <= 9 && popDataUnit.count > 4) {
+      popDataUnit.color = 'magenta'
+    }
+    if (popDataUnit.count <= 4 && popDataUnit.count > 1) {
+      popDataUnit.color = 'pink'
+    }
+    // eslint-disable-next-line eqeqeq
+    if (popDataUnit.count == 1) {
+      popDataUnit.color = 'lemonchiffon'
+    }
+    // eslint-disable-next-line eqeqeq
+    if (popDataUnit.count == 0) {
+      popDataUnit.color = 'white'
+    }
+    popData.push(popDataUnit)
+  }
+
   console.log('end loadYouseiData()')
 }
 
@@ -184,7 +156,7 @@ function drawOsaka(vm, elementWidth) {
     .attr('height', osakaPrefSize.height)
     .append('g')
 
-  // 同じディレクトリにあるgeojsonファイルをhttp経由で読み込む
+  // staticフォルダのgeoJSONファイルをhttp経由で読み込む
   d3.json('osakapref.json').then(function(json) {
     // 市区町村表示領域を生成
     // ツールチップ
