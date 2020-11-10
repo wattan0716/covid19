@@ -14,8 +14,8 @@ class DataJson:
         self.cert_txt = './tool/client.txt'
         self.token_param = 'X-Cybozu-API-Token'
         self.token_env = 'KINTONE_API_TOKEN_'
-        # self.url_records = 'https://pref-osaka.s.cybozu.com/k/v1/records.json?'
-        self.url_records = 'https://pref-osaka.cybozu.com/k/v1/records.json?'
+        self.url_records = 'https://pref-osaka.s.cybozu.com/k/v1/records.json?'
+        # self.url_records = 'https://pref-osaka.cybozu.com/k/v1/records.json?'
         # 今のdata.json読み込み
         self.current_data_json = self.get_json(self.json_file)
         # 全データ込
