@@ -29,6 +29,12 @@
     </template>
     <!-- <ibaraki-map /> -->
     <div id="map" ref="map" class="osaka-map" />
+    <date-select-slider
+      :height="240"
+      :value="[0, sliderMax]"
+      :slider-max="sliderMax"
+      @sliderInput="sliderUpdate"
+    />
   </data-view>
   <!-- </v-col> -->
 </template>
@@ -37,6 +43,7 @@
 import * as d3 from 'd3'
 import Data from '@/data/data.json'
 import DataView from '@/components/DataView.vue'
+import DateSelectSlider from '@/components/DateSelectSlider.vue'
 
 const popData = []
 // 市町村の患者人数の連想配列
@@ -44,18 +51,46 @@ const cityPatientsNumber = {}
 
 export default {
   components: {
-    // IbarakiMap,
-    DataView
+    DataView,
+    DateSelectSlider
   },
   data() {
     const data = {
-      Data
+      Data,
+      graphRange: [0, this.sliderMax - 1]
     }
     return data
+  },
+  computed: {
+    // データの一番古い日付
+    dateMin() {
+      const patients = Data.patients.data
+      return new Date(patients[0].date)
+    },
+    // データの一番新しい日付
+    dateMax() {
+      const patients = Data.patients.data
+      return new Date(patients[patients.length - 1].date)
+    },
+    sliderMax() {
+      let ret = (this.dateMax - this.dateMin) / 86400000
+      console.log(ret)
+      if (!ret) ret = 1
+      return ret
+      // if (!this.chartData || this.chartData.length === 0) {
+      //   return 1
+      // }
+      // return this.chartData.length - 1
+    }
   },
   mounted() {
     loadYouseiData()
     drawOsaka(this, this.$refs.map.clientWidth)
+  },
+  methods: {
+    sliderUpdate(sliderValue) {
+      this.graphRange = sliderValue
+    }
   }
 }
 
@@ -68,6 +103,12 @@ function loadYouseiData() {
     cityPatientsNumber[key.居住地] = patients.filter(function(x) {
       return x.居住地 === key.居住地
     }).length
+
+    // const keyDate = new Date(key.date)
+    // if (!dateMin) dateMin = keyDate
+    // if (!dateMax) dateMax = keyDate
+    // if (dateMin > keyDate) dateMin = keyDate
+    // if (dateMax < keyDate) dateMax = keyDate
   }
 
   for (const key in cityPatientsNumber) {
