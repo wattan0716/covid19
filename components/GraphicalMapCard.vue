@@ -30,7 +30,7 @@
     <!-- <ibaraki-map /> -->
     <div id="map" ref="map" class="osaka-map" />
     <date-select-slider
-      :height="240"
+      :chart-data="chartData"
       :value="[0, sliderMax]"
       :slider-max="sliderMax"
       @sliderInput="sliderUpdate"
@@ -41,6 +41,7 @@
 
 <script>
 import * as d3 from 'd3'
+import dayjs from 'dayjs'
 import Data from '@/data/data.json'
 import DataView from '@/components/DataView.vue'
 import DateSelectSlider from '@/components/DateSelectSlider.vue'
@@ -65,22 +66,27 @@ export default {
     // データの一番古い日付
     dateMin() {
       const patients = Data.patients.data
-      return new Date(patients[0].date)
+      return dayjs(patients[0].date)
     },
     // データの一番新しい日付
     dateMax() {
       const patients = Data.patients.data
-      return new Date(patients[patients.length - 1].date)
+      return dayjs(patients[patients.length - 1].date)
     },
+    // スライダーのデータ数
     sliderMax() {
-      let ret = (this.dateMax - this.dateMin) / 86400000
-      console.log(ret)
-      if (!ret) ret = 1
-      return ret
-      // if (!this.chartData || this.chartData.length === 0) {
-      //   return 1
-      // }
-      // return this.chartData.length - 1
+      if (!this.chartData || this.chartData.length === 0) {
+        return 1
+      }
+      return this.chartData.length - 1
+    },
+    // 日付のダミーデータ
+    chartData() {
+      const chartData = []
+      for (let i = 0; this.dateMin.add(i, 'day') <= this.dateMax; i++) {
+        chartData[i] = { label: this.dateMin.add(i, 'day') }
+      }
+      return chartData
     }
   },
   mounted() {
@@ -89,6 +95,7 @@ export default {
   },
   methods: {
     sliderUpdate(sliderValue) {
+      console.log(sliderValue)
       this.graphRange = sliderValue
     }
   }
@@ -103,12 +110,6 @@ function loadYouseiData() {
     cityPatientsNumber[key.居住地] = patients.filter(function(x) {
       return x.居住地 === key.居住地
     }).length
-
-    // const keyDate = new Date(key.date)
-    // if (!dateMin) dateMin = keyDate
-    // if (!dateMax) dateMax = keyDate
-    // if (dateMin > keyDate) dateMin = keyDate
-    // if (dateMax < keyDate) dateMax = keyDate
   }
 
   for (const key in cityPatientsNumber) {
