@@ -109,7 +109,7 @@ export default {
       console.log(sliderValue)
       this.graphRange = sliderValue
       this.loadYouseiData()
-      drawOsaka()
+      drawOsaka(this, this.$refs.map.clientWidth)
     },
     // 陽性者数集計
     loadYouseiData() {
