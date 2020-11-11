@@ -48,7 +48,7 @@ import DateSelectSlider from '@/components/DateSelectSlider.vue'
 
 const popData = []
 // 市町村の患者人数の連想配列
-const cityPatientsNumber = {}
+let cityPatientsNumber = {}
 
 export default {
   components: {
@@ -56,92 +56,134 @@ export default {
     DateSelectSlider
   },
   data() {
+    // データの一番古い日付
+    const dateMin = dayjs(Data.patients.data[0].date)
+    // データの一番新しい日付
+    const dateMax = dayjs(
+      Data.patients.data[Object.keys(Data.patients.data).length - 1].date
+    )
+    // 日付のダミーデータ
+    const chartData = []
+    for (let i = 0; dateMin.add(i, 'day') <= dateMax; i++) {
+      chartData[i] = { label: dateMin.add(i, 'day') }
+    }
+    // 日付範囲選択スライダーで選択している範囲
+    const graphRange = [0, (dateMax - dateMin) / 86400000 - 1]
+
     const data = {
       Data,
-      graphRange: [0, this.sliderMax - 1]
+      dateMin,
+      dateMax,
+      chartData,
+      graphRange
     }
     return data
   },
   computed: {
-    // データの一番古い日付
-    dateMin() {
-      const patients = Data.patients.data
-      return dayjs(patients[0].date)
-    },
-    // データの一番新しい日付
-    dateMax() {
-      const patients = Data.patients.data
-      return dayjs(patients[patients.length - 1].date)
-    },
+    // graphRange() {
+    //   return [0, this.sliderMax - 1] // 日付範囲選択スライダーで選択している範囲
+    // }
     // スライダーのデータ数
     sliderMax() {
-      if (!this.chartData || this.chartData.length === 0) {
-        return 1
-      }
-      return this.chartData.length - 1
-    },
-    // 日付のダミーデータ
-    chartData() {
-      const chartData = []
-      for (let i = 0; this.dateMin.add(i, 'day') <= this.dateMax; i++) {
-        chartData[i] = { label: this.dateMin.add(i, 'day') }
-      }
-      return chartData
+      // console.log(this.dateMax)
+      // console.log(this.dateMin)
+      // console.log(Object.keys(Data.patients.data).length)
+      // console.log(
+      //   Data.patients.data[Object.keys(Data.patients.data).length - 1]
+      // )
+      // console.log(
+      //   Data.patients.data[Object.keys(Data.patients.data).length - 1].date
+      // )
+      // console.log(this.dateMax - this.dateMin)
+      console.log((this.dateMax - this.dateMin) / 86400000)
+      return (this.dateMax - this.dateMin) / 86400000
     }
   },
   mounted() {
-    loadYouseiData()
+    this.loadYouseiData()
     drawOsaka(this, this.$refs.map.clientWidth)
   },
   methods: {
+    // 日付範囲選択スライダー変更イベント
     sliderUpdate(sliderValue) {
       console.log(sliderValue)
       this.graphRange = sliderValue
+      this.loadYouseiData()
+      drawOsaka()
+    },
+    // 陽性者数集計
+    loadYouseiData() {
+      console.log('start loadYouseiData()')
+      // 初期化
+      popData.length = 0
+      cityPatientsNumber = {}
+
+      const patients = Data.patients.data
+
+      console.log(this.graphRange)
+      const minPos = this.graphRange[0]
+      const maxPos = this.graphRange[1]
+      console.log(minPos)
+      console.log(maxPos)
+      console.log(this.chartData[minPos])
+      console.log(this.chartData[maxPos])
+      const minDate = dayjs(this.chartData[minPos].label)
+      const maxDate = dayjs(this.chartData[maxPos].label)
+
+      console.log('in loadYouseiData() created min/maxDate')
+      console.log(minDate)
+      console.log(maxDate)
+
+      // for (const key of patients) {
+      //   cityPatientsNumber[key.居住地] = patients.filter(function(x) {
+      //     const date = dayjs(key.date)
+      //     return x.居住地 === key.居住地 && minDate <= date && date <= maxDate
+      //   }).length
+      // }
+      for (const key of patients) {
+        const date = dayjs(key.date)
+        if (minDate <= date && date <= maxDate) {
+          if (!cityPatientsNumber[key.居住地])
+            cityPatientsNumber[key.居住地] = 0
+          cityPatientsNumber[key.居住地] += 1
+        } else if (!cityPatientsNumber[key.居住地]) {
+          cityPatientsNumber[key.居住地] = 0
+        }
+      }
+
+      console.log('in loadYouseiData() created cityPatientsNumber')
+      for (const key in cityPatientsNumber) {
+        const popDataUnit = {}
+        popDataUnit.name = key
+        popDataUnit.count = cityPatientsNumber[key]
+
+        // 陽性者数に応じて塗る色を計算
+        if (popDataUnit.count > 99) {
+          popDataUnit.color = 'red'
+        }
+        if (popDataUnit.count <= 99 && popDataUnit.count > 9) {
+          popDataUnit.color = 'deeppink'
+        }
+        if (popDataUnit.count <= 9 && popDataUnit.count > 4) {
+          popDataUnit.color = 'magenta'
+        }
+        if (popDataUnit.count <= 4 && popDataUnit.count > 1) {
+          popDataUnit.color = 'pink'
+        }
+        // eslint-disable-next-line eqeqeq
+        if (popDataUnit.count == 1) {
+          popDataUnit.color = 'lemonchiffon'
+        }
+        // eslint-disable-next-line eqeqeq
+        if (popDataUnit.count == 0) {
+          popDataUnit.color = 'white'
+        }
+        popData.push(popDataUnit)
+      }
+
+      console.log('end loadYouseiData()')
     }
   }
-}
-
-function loadYouseiData() {
-  console.log('start loadYouseiData()')
-
-  const patients = Data.patients.data
-
-  for (const key of patients) {
-    cityPatientsNumber[key.居住地] = patients.filter(function(x) {
-      return x.居住地 === key.居住地
-    }).length
-  }
-
-  for (const key in cityPatientsNumber) {
-    const popDataUnit = {}
-    popDataUnit.name = key
-    popDataUnit.count = cityPatientsNumber[key]
-
-    // 陽性者数に応じて塗る色を計算
-    if (popDataUnit.count > 99) {
-      popDataUnit.color = 'red'
-    }
-    if (popDataUnit.count <= 99 && popDataUnit.count > 9) {
-      popDataUnit.color = 'deeppink'
-    }
-    if (popDataUnit.count <= 9 && popDataUnit.count > 4) {
-      popDataUnit.color = 'magenta'
-    }
-    if (popDataUnit.count <= 4 && popDataUnit.count > 1) {
-      popDataUnit.color = 'pink'
-    }
-    // eslint-disable-next-line eqeqeq
-    if (popDataUnit.count == 1) {
-      popDataUnit.color = 'lemonchiffon'
-    }
-    // eslint-disable-next-line eqeqeq
-    if (popDataUnit.count == 0) {
-      popDataUnit.color = 'white'
-    }
-    popData.push(popDataUnit)
-  }
-
-  console.log('end loadYouseiData()')
 }
 
 // 大阪府描画
