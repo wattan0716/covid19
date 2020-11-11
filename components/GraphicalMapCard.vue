@@ -65,9 +65,8 @@ function loadYouseiData() {
   const patients = Data.patients.data
 
   for (const key of patients) {
-    cityPatientsNumber[key.居住地] = patients.filter(function(x) {
-      return x.居住地 === key.居住地
-    }).length
+    cityPatientsNumber[key.居住地] = cityPatientsNumber[key.居住地] || 0
+    ++cityPatientsNumber[key.居住地]
   }
 
   for (const key in cityPatientsNumber) {
