@@ -38,8 +38,9 @@ import * as d3 from 'd3'
 import Data from '@/data/data.json'
 import DataView from '@/components/DataView.vue'
 
-const popData = []
 // 市町村の患者人数の連想配列
+// key:市町村名
+// value:陽性者数
 const cityPatientsNumber = {}
 
 export default {
@@ -68,35 +69,6 @@ function loadYouseiData() {
     cityPatientsNumber[key.居住地] = patients.filter(function(x) {
       return x.居住地 === key.居住地
     }).length
-  }
-
-  for (const key in cityPatientsNumber) {
-    const popDataUnit = {}
-    popDataUnit.name = key
-    popDataUnit.count = cityPatientsNumber[key]
-
-    // 陽性者数に応じて塗る色を計算
-    if (popDataUnit.count > 99) {
-      popDataUnit.color = 'red'
-    }
-    if (popDataUnit.count <= 99 && popDataUnit.count > 9) {
-      popDataUnit.color = 'deeppink'
-    }
-    if (popDataUnit.count <= 9 && popDataUnit.count > 4) {
-      popDataUnit.color = 'magenta'
-    }
-    if (popDataUnit.count <= 4 && popDataUnit.count > 1) {
-      popDataUnit.color = 'pink'
-    }
-    // eslint-disable-next-line eqeqeq
-    if (popDataUnit.count == 1) {
-      popDataUnit.color = 'lemonchiffon'
-    }
-    // eslint-disable-next-line eqeqeq
-    if (popDataUnit.count == 0) {
-      popDataUnit.color = 'white'
-    }
-    popData.push(popDataUnit)
   }
 
   console.log('end loadYouseiData()')
@@ -191,16 +163,18 @@ function drawOsaka(vm, elementWidth) {
       .attr('d', path)
       // 陽性者に対応した色で境界内を塗る
       .style('fill', function(d) {
-        return popData[d.properties.index].color
+        const cityName = getCity(d)
+        return getColor(cityPatientsNumber[cityName])
       })
       .on('mouseover, mousemove', function(d) {
+        const cityName = getCity(d)
         tooltip
           .style('opacity', 0.9)
           .html(
             '<strong>' +
-              vm.$t(popData[d.properties.index].name) +
+              vm.$t(cityName) +
               '</strong><br>' +
-              popData[d.properties.index].count +
+              cityPatientsNumber[cityName] +
               ' ' +
               vm.$t('人')
           )
@@ -212,6 +186,36 @@ function drawOsaka(vm, elementWidth) {
       })
   })
   console.log('end drawOsaka()')
+}
+
+// 陽性者数に応じて塗る色を返す
+function getColor(num) {
+  if (num > 99) {
+    return 'red'
+  } else if (num > 9) {
+    return 'deeppink'
+  } else if (num > 4) {
+    return 'magenta'
+  } else if (num > 1) {
+    return 'pink'
+  } else if (num === 1) {
+    return 'lemonchiffon'
+  } else if (num === 0) {
+    return 'white'
+  }
+  // ここには来ないはず
+  console.error('想定外のnum' + num)
+  return ''
+}
+
+// 市町村名取得
+// @param gio gioJSONの１データ
+function getCity(gio) {
+  // 大阪市と堺市はN03_004が区なので、N03_003を参照する。その他はN03_004を使用する
+  const cityName = gio.properties.N03_004.endsWith('区')
+    ? gio.properties.N03_003
+    : gio.properties.N03_004
+  return cityName
 }
 </script>
 
