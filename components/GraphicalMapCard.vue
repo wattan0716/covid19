@@ -49,6 +49,8 @@ import DateSelectSlider from '@/components/DateSelectSlider.vue'
 const popData = []
 // 市町村の患者人数の連想配列
 let cityPatientsNumber = {}
+let map
+let isMounted = false
 
 export default {
   components: {
@@ -186,6 +188,23 @@ export default {
   }
 }
 
+// function updateMap() {
+//   d3.json('osakapref.json').then(function(json) {
+//     map
+//       .selectAll('path')
+//       .data(json.features)
+//       .enter()
+//       .append('path')
+//       .attr('d', path)
+//       // 陽性者に対応した色で境界内を塗る
+//       .style('fill', function(d) {
+//         return popData[d.properties.index].color
+//       })
+//       .exit()
+//       .remove()
+//   })
+// }
+
 // 大阪府描画
 function drawOsaka(vm, elementWidth) {
   console.log('start drawOsaka()')
@@ -232,14 +251,23 @@ function drawOsaka(vm, elementWidth) {
   }
   */
 
-  // マップ描画
-  const map = d3
-    .select('#map')
-    .append('svg')
-    .attr('width', osakaPrefSize.width)
-    .attr('height', osakaPrefSize.height)
-    .append('g')
+  // d3.select('#map')
+  //   .exit()
+  //   .remove()
+  console.log('isMounted')
+  console.log(isMounted)
+  console.log('map')
+  console.log(map)
 
+  // マップ描画
+  if (!isMounted) {
+    map = d3
+      .select('#map')
+      .append('svg')
+      .attr('width', osakaPrefSize.width)
+      .attr('height', osakaPrefSize.height)
+      .append('g')
+  }
   // staticフォルダのgeoJSONファイルをhttp経由で読み込む
   d3.json('osakapref.json').then(function(json) {
     // 市区町村表示領域を生成
@@ -267,33 +295,74 @@ function drawOsaka(vm, elementWidth) {
     const path = d3.geoPath().projection(projection)
     // これがenterしたデータ毎に呼び出されpath要素のd属性にgeoJSONデータから変換した値を入れて市町村境界描画
 
-    map
-      .selectAll('path')
-      .data(json.features)
-      .enter()
-      .append('path')
-      .attr('d', path)
-      // 陽性者に対応した色で境界内を塗る
-      .style('fill', function(d) {
-        return popData[d.properties.index].color
-      })
-      .on('mouseover, mousemove', function(d) {
-        tooltip
-          .style('opacity', 0.9)
-          .html(
-            '<strong>' +
-              vm.$t(popData[d.properties.index].name) +
-              '</strong><br>' +
-              popData[d.properties.index].count +
-              ' ' +
-              vm.$t('人')
-          )
-          .style('left', d3.event.pageX + 'px')
-          .style('top', d3.event.pageY - 45 + 'px')
-      })
-      .on('mouseout', function() {
-        tooltip.style('opacity', 0)
-      })
+    // console.log('isMounted')
+    // console.log(isMounted)
+    // if (!isMounted) {
+    //   console.log('作成')
+    //   // 作成
+    //   mapData = map
+    //     .selectAll('path')
+    //     .data(json.features)
+    //     .enter()
+    // } else {
+    //   console.log('更新')
+    //   // 更新
+    //   mapData = map.selectAll('path').data(json.features)
+    // }
+    // mapData
+
+    // // クリア
+    // map
+    //   .selectAll('path')
+    //   .exit()
+    //   .remove()
+    if (!isMounted) {
+      console.log('作成')
+      map
+        .selectAll('path')
+        .data(json.features)
+        .enter()
+        .append('path')
+        .attr('d', path)
+        // 陽性者に対応した色で境界内を塗る
+        .style('fill', function(d) {
+          const color = popData[d.properties.index].color
+          console.log(color)
+          return color
+        })
+        // マウスオーバーでツールチップ表示
+        .on('mouseover, mousemove', function(d) {
+          tooltip
+            .style('opacity', 0.9)
+            .html(
+              '<strong>' +
+                vm.$t(popData[d.properties.index].name) +
+                '</strong><br>' +
+                popData[d.properties.index].count +
+                ' ' +
+                vm.$t('人')
+            )
+            .style('left', d3.event.pageX + 'px')
+            .style('top', d3.event.pageY - 45 + 'px')
+        })
+        .on('mouseout', function() {
+          tooltip.style('opacity', 0)
+        })
+
+      console.log('isMounted')
+      console.log(isMounted)
+      isMounted = true
+    } else {
+      console.log('更新')
+      map
+        .selectAll('path')
+        // 陽性者に対応した色で境界内を塗る
+        .style('fill', function(d) {
+          const color = popData[d.properties.index].color
+          console.log(color)
+          return color
+        })
+    }
   })
   console.log('end drawOsaka()')
 }
