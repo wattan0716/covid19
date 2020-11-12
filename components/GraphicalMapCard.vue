@@ -50,7 +50,7 @@ const popData = []
 // 市町村の患者人数の連想配列
 let cityPatientsNumber = {}
 let map
-let isMounted = false
+let mapDrawn = false // map描画済みフラグ
 
 export default {
   components: {
@@ -82,22 +82,8 @@ export default {
     return data
   },
   computed: {
-    // graphRange() {
-    //   return [0, this.sliderMax - 1] // 日付範囲選択スライダーで選択している範囲
-    // }
     // スライダーのデータ数
     sliderMax() {
-      // console.log(this.dateMax)
-      // console.log(this.dateMin)
-      // console.log(Object.keys(Data.patients.data).length)
-      // console.log(
-      //   Data.patients.data[Object.keys(Data.patients.data).length - 1]
-      // )
-      // console.log(
-      //   Data.patients.data[Object.keys(Data.patients.data).length - 1].date
-      // )
-      // console.log(this.dateMax - this.dateMin)
-      console.log((this.dateMax - this.dateMin) / 86400000)
       return (this.dateMax - this.dateMin) / 86400000
     }
   },
@@ -122,38 +108,20 @@ export default {
 
       const patients = Data.patients.data
 
-      console.log(this.graphRange)
       const minPos = this.graphRange[0]
       const maxPos = this.graphRange[1]
-      console.log(minPos)
-      console.log(maxPos)
-      console.log(this.chartData[minPos])
-      console.log(this.chartData[maxPos])
       const minDate = dayjs(this.chartData[minPos].label)
       const maxDate = dayjs(this.chartData[maxPos].label)
 
-      console.log('in loadYouseiData() created min/maxDate')
-      console.log(minDate)
-      console.log(maxDate)
-
-      // for (const key of patients) {
-      //   cityPatientsNumber[key.居住地] = patients.filter(function(x) {
-      //     const date = dayjs(key.date)
-      //     return x.居住地 === key.居住地 && minDate <= date && date <= maxDate
-      //   }).length
-      // }
       for (const key of patients) {
         const date = dayjs(key.date)
+        if (!cityPatientsNumber[key.居住地]) cityPatientsNumber[key.居住地] = 0 // 初期化
+        // 日付の範囲ならカウント
         if (minDate <= date && date <= maxDate) {
-          if (!cityPatientsNumber[key.居住地])
-            cityPatientsNumber[key.居住地] = 0
           cityPatientsNumber[key.居住地] += 1
-        } else if (!cityPatientsNumber[key.居住地]) {
-          cityPatientsNumber[key.居住地] = 0
         }
       }
 
-      console.log('in loadYouseiData() created cityPatientsNumber')
       for (const key in cityPatientsNumber) {
         const popDataUnit = {}
         popDataUnit.name = key
@@ -187,23 +155,6 @@ export default {
     }
   }
 }
-
-// function updateMap() {
-//   d3.json('osakapref.json').then(function(json) {
-//     map
-//       .selectAll('path')
-//       .data(json.features)
-//       .enter()
-//       .append('path')
-//       .attr('d', path)
-//       // 陽性者に対応した色で境界内を塗る
-//       .style('fill', function(d) {
-//         return popData[d.properties.index].color
-//       })
-//       .exit()
-//       .remove()
-//   })
-// }
 
 // 大阪府描画
 function drawOsaka(vm, elementWidth) {
@@ -251,16 +202,8 @@ function drawOsaka(vm, elementWidth) {
   }
   */
 
-  // d3.select('#map')
-  //   .exit()
-  //   .remove()
-  console.log('isMounted')
-  console.log(isMounted)
-  console.log('map')
-  console.log(map)
-
-  // マップ描画
-  if (!isMounted) {
+  // マップ描画領域作成（初回のみ）
+  if (!mapDrawn) {
     map = d3
       .select('#map')
       .append('svg')
@@ -268,6 +211,7 @@ function drawOsaka(vm, elementWidth) {
       .attr('height', osakaPrefSize.height)
       .append('g')
   }
+
   // staticフォルダのgeoJSONファイルをhttp経由で読み込む
   d3.json('osakapref.json').then(function(json) {
     // 市区町村表示領域を生成
@@ -295,29 +239,8 @@ function drawOsaka(vm, elementWidth) {
     const path = d3.geoPath().projection(projection)
     // これがenterしたデータ毎に呼び出されpath要素のd属性にgeoJSONデータから変換した値を入れて市町村境界描画
 
-    // console.log('isMounted')
-    // console.log(isMounted)
-    // if (!isMounted) {
-    //   console.log('作成')
-    //   // 作成
-    //   mapData = map
-    //     .selectAll('path')
-    //     .data(json.features)
-    //     .enter()
-    // } else {
-    //   console.log('更新')
-    //   // 更新
-    //   mapData = map.selectAll('path').data(json.features)
-    // }
-    // mapData
-
-    // // クリア
-    // map
-    //   .selectAll('path')
-    //   .exit()
-    //   .remove()
-    if (!isMounted) {
-      console.log('作成')
+    if (!mapDrawn) {
+      // 初回は地図表示
       map
         .selectAll('path')
         .data(json.features)
@@ -326,9 +249,7 @@ function drawOsaka(vm, elementWidth) {
         .attr('d', path)
         // 陽性者に対応した色で境界内を塗る
         .style('fill', function(d) {
-          const color = popData[d.properties.index].color
-          console.log(color)
-          return color
+          return popData[d.properties.index].color
         })
         // マウスオーバーでツールチップ表示
         .on('mouseover, mousemove', function(d) {
@@ -348,19 +269,15 @@ function drawOsaka(vm, elementWidth) {
         .on('mouseout', function() {
           tooltip.style('opacity', 0)
         })
-
-      console.log('isMounted')
-      console.log(isMounted)
-      isMounted = true
+      // 地図表示済みに設定
+      mapDrawn = true
     } else {
-      console.log('更新')
+      // ２回目以降は更新のみ
       map
         .selectAll('path')
         // 陽性者に対応した色で境界内を塗る
         .style('fill', function(d) {
-          const color = popData[d.properties.index].color
-          console.log(color)
-          return color
+          return popData[d.properties.index].color
         })
     }
   })
