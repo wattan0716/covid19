@@ -260,6 +260,10 @@ $infected-level6: red;
   opacity: 0;
 }
 
+#map svg {
+  width: 100%;
+}
+
 //path:hover {
 //  opacity: 0.5;
 //}
