@@ -27,7 +27,6 @@
         </tbody>
       </table>
     </template>
-    <!-- <ibaraki-map /> -->
     <div id="map" ref="map" class="osaka-map" />
     <p :class="$style.note">
       <a
@@ -121,7 +120,13 @@ function drawOsaka(vm) {
     .append('g')
 
   // staticフォルダのgeoJSONファイルをhttp経由で読み込む
-  d3.json('osakapref.json').then(function(json) {
+  Promise.all([
+    d3.json('osakapref.json'),
+    d3.json('osakapref-centroid.json')
+  ]).then(files => {
+    const json = files[0]
+    const centroid = files[1]
+
     // 市区町村表示領域を生成
     // ツールチップ
     const tooltip = d3
@@ -159,12 +164,13 @@ function drawOsaka(vm) {
       .data(json.features)
       .enter()
       .append('path')
+      .attr('class', 'land')
       .attr('d', path)
       // 陽性者に対応した色で境界内を塗る
-      .style('fill', function(d) {
+      .style('fill', d => {
         return popData[d.properties.index].color
       })
-      .on('mouseover, mousemove', function(d) {
+      .on('mouseover, mousemove', d => {
         tooltip
           .style('opacity', 0.9)
           .html(
@@ -178,11 +184,36 @@ function drawOsaka(vm) {
           .style('left', d3.event.pageX + 'px')
           .style('top', d3.event.pageY - 45 + 'px')
       })
-      .on('mouseout', function() {
+      .on('mouseout', () => {
         tooltip.style('opacity', 0)
       })
+
+    // 市区町村名の表示
+    const g = map
+      .selectAll('g')
+      .data(
+        centroid.features.map(v => [
+          projection(v.geometry.coordinates),
+          v.properties.name
+        ])
+      )
+      .enter()
+      .append('g')
+
+    g.append('text')
+      .attr('class', 'text text-back')
+      .attr('x', d => d[0][0])
+      .attr('y', d => d[0][1])
+      .text(d => d[1])
+
+    g.append('text')
+      .attr('class', 'text text-front')
+      .attr('x', d => d[0][0])
+      .attr('y', d => d[0][1])
+      .text(d => d[1])
+
+    console.log('end drawOsaka()')
   })
-  console.log('end drawOsaka()')
 }
 </script>
 
@@ -264,12 +295,26 @@ $infected-level6: red;
   width: 100%;
 }
 
-//path:hover {
-//  opacity: 0.5;
-//}
-
-#map path {
+#map .land {
   stroke: #333;
   stroke-width: 1px;
+}
+
+#map .text {
+  font-size: 12px;
+  font-weight: bold;
+
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+
+#map .text-back {
+  stroke: #fff;
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+
+#map .text-front {
+  fill: #000;
 }
 </style>
