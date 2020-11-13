@@ -159,8 +159,6 @@ function drawOsaka(vm) {
         tooltip.style('opacity', 0)
       })
 
-    console.log(centroid)
-
     // 市区町村名の表示
     const textGroup = map
       .selectAll('g')
