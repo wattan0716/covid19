@@ -130,6 +130,8 @@ function drawOsaka(vm) {
         'viewBox',
         `0, 0, ${bounds[0][0] + bounds[1][0]}, ${bounds[0][1] + bounds[1][1]}`
       )
+      .attr('width', bounds[0][0] + bounds[1][0])
+      .attr('height', bounds[0][1] + bounds[1][1])
 
     map
       .selectAll('path')
