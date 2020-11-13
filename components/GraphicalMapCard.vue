@@ -139,31 +139,30 @@ function drawOsaka(vm) {
       .attr('class', 'land')
       .attr('d', path)
       // 陽性者に対応した色で境界内を塗る
-      .style('fill', function(d) {
+      .style('fill', d => {
         const cityName = getCity(d)
         return getColor(cityPatientsNumber[cityName])
       })
-      .on('mouseover, mousemove', function(d) {
+      .on('mouseover, mousemove', d => {
         const cityName = getCity(d)
         tooltip
           .style('opacity', 0.9)
           .html(
-            '<strong>' +
-              vm.$t(cityName) +
-              '</strong><br>' +
-              cityPatientsNumber[cityName] +
-              ' ' +
-              vm.$t('人')
+            `<strong>${vm.$t(cityName)}</strong><br>${
+              cityPatientsNumber[cityName]
+            } ${vm.$t('人')}`
           )
-          .style('left', d3.event.pageX + 'px')
-          .style('top', d3.event.pageY - 45 + 'px')
+          .style('left', `${d3.event.pageX}px`)
+          .style('top', `${d3.event.pageY - 45}px`)
       })
       .on('mouseout', () => {
         tooltip.style('opacity', 0)
       })
 
+    console.log(centroid)
+
     // 市区町村名の表示
-    const g = map
+    const textGroup = map
       .selectAll('g')
       .data(
         centroid.features.map(v => [
@@ -174,17 +173,29 @@ function drawOsaka(vm) {
       .enter()
       .append('g')
 
-    g.append('text')
-      .attr('class', 'text text-back')
-      .attr('x', d => d[0][0])
-      .attr('y', d => d[0][1])
-      .text(d => d[1])
-
-    g.append('text')
-      .attr('class', 'text text-front')
-      .attr('x', d => d[0][0])
-      .attr('y', d => d[0][1])
-      .text(d => d[1])
+    ;['text-back', 'text-front'].forEach(v => {
+      textGroup
+        .append('text')
+        .attr('class', `text ${v}`)
+        .attr('x', d => d[0][0])
+        .attr('y', d => d[0][1])
+        .text(d => d[1])
+        .on('mouseover, mousemove', d => {
+          const cityName = d[1]
+          tooltip
+            .style('opacity', 0.9)
+            .html(
+              `<strong>${vm.$t(cityName)}</strong><br>${
+                cityPatientsNumber[cityName]
+              } ${vm.$t('人')}`
+            )
+            .style('left', `${d3.event.pageX}px`)
+            .style('top', `${d3.event.pageY - 45}px`)
+        })
+        .on('mouseout', () => {
+          tooltip.style('opacity', 0)
+        })
+    })
 
     console.log('end drawOsaka()')
   })
