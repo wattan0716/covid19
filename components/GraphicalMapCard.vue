@@ -27,8 +27,16 @@
         </tbody>
       </table>
     </template>
-    <!-- <ibaraki-map /> -->
     <div id="map" ref="map" class="osaka-map" />
+    <p :class="$style.note">
+      <a
+        href="https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-N03-v2_4.html"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {{ $t('「国土数値情報（行政区域）」（国土交通省）を加工して作成') }}
+      </a>
+    </p>
   </data-view>
   <!-- </v-col> -->
 </template>
@@ -56,7 +64,7 @@ export default {
   },
   mounted() {
     loadYouseiData()
-    drawOsaka(this, this.$refs.map.clientWidth)
+    drawOsaka(this)
   }
 }
 
@@ -66,70 +74,31 @@ function loadYouseiData() {
   const patients = Data.patients.data
 
   for (const key of patients) {
-    cityPatientsNumber[key.居住地] = patients.filter(function(x) {
-      return x.居住地 === key.居住地
-    }).length
+    cityPatientsNumber[key.居住地] = cityPatientsNumber[key.居住地] || 0
+    ++cityPatientsNumber[key.居住地]
   }
 
   console.log('end loadYouseiData()')
 }
 
 // 大阪府描画
-function drawOsaka(vm, elementWidth) {
+function drawOsaka(vm) {
   console.log('start drawOsaka()')
-
-  // scale = 10000 のときのwidthとheight(描画後のwidth/heightから取得)
-  const osakaPrefBaseSize = {
-    width: 114.37,
-    height: 165.2,
-    scale: 10000
-  }
-
-  const osakaPrefHorizontalToVerticalRatio =
-    osakaPrefBaseSize.height / osakaPrefBaseSize.width
-
-  const osakaPrefHorizontalToScaleRatio =
-    osakaPrefBaseSize.scale / osakaPrefBaseSize.width
-
-  const osakaPrefSize = {
-    width: elementWidth,
-    height: osakaPrefHorizontalToVerticalRatio * elementWidth,
-    scale: osakaPrefHorizontalToScaleRatio * elementWidth
-  }
-  // const ua = window.navigator.userAgent.toLowerCase() // ブラウザ判定 // 未使用のため、コメントアウト
-  // scaleはスクリーンの大きさによって変更
-  // let scale
-  // let label_font_size // 未使用のため、コメントアウト
-  // let label_width // 未使用のため、コメントアウト
-  // let label_height // 未使用のため、コメントアウト
-  // let font_size // 未使用のため、コメントアウト
-
-  // スマートフォンの時は変数調整 // 未使用のためコメントアウト
-  /*
-  if (width < 601) {
-    scale = 30000
-    // label_font_size = '16pt' // 未使用のため、コメントアウト
-    // label_width = 40 // 未使用のため、コメントアウト
-    // font_size = '7pt' // 未使用のため、コメントアウト
-    // graphY = height / 2 // 未使用のため、コメントアウト
-  } else {
-    scale = 25000
-    // label_font_size = '16pt' // 未使用のため、コメントアウト
-    // label_width = 80 // 未使用のため、コメントアウト
-    // font_size = '10pt' // 未使用のため、コメントアウト
-  }
-  */
 
   // マップ描画
   const map = d3
     .select('#map')
     .append('svg')
-    .attr('width', osakaPrefSize.width)
-    .attr('height', osakaPrefSize.height)
     .append('g')
 
   // staticフォルダのgeoJSONファイルをhttp経由で読み込む
-  d3.json('osakapref.json').then(function(json) {
+  Promise.all([
+    d3.json('osakapref.json'),
+    d3.json('osakapref-centroid.json')
+  ]).then(files => {
+    const json = files[0]
+    const centroid = files[1]
+
     // 市区町村表示領域を生成
     // ツールチップ
     const tooltip = d3
@@ -137,55 +106,99 @@ function drawOsaka(vm, elementWidth) {
       .append('div')
       .attr('class', 'tooltip')
 
-    // データの中心点を計算
-    // refs: https://qiita.com/yuiken/items/1153922ad20be1d26ced
-    const bounds = d3.geoBounds(json)
-    const center = [
-      (bounds[0][0] + bounds[1][0]) / 2,
-      (bounds[0][1] + bounds[1][1]) / 2
-    ]
-
     // 投影を処理する関数を用意する。データからSVGのPATHに変換するため。
-    const projection = d3
-      .geoMercator()
-      .center(center)
-      .translate([osakaPrefSize.width / 2, osakaPrefSize.height / 2])
-      .scale(osakaPrefSize.scale)
+    let projection = d3.geoMercator().fitWidth(486, json)
+
     // pathジェネレータ関数
     const path = d3.geoPath().projection(projection)
     // これがenterしたデータ毎に呼び出されpath要素のd属性にgeoJSONデータから変換した値を入れて市町村境界描画
+
+    // paddingを追加し、viewBox属性のための数値を取得
+    let bounds = path.bounds(json)
+    projection = projection.fitExtent(
+      [
+        [5, 5],
+        [bounds[1][0], bounds[1][1]]
+      ],
+      json
+    )
+    bounds = path.bounds(json)
+
+    d3.select('#map')
+      .select('svg')
+      .attr(
+        'viewBox',
+        `0, 0, ${bounds[0][0] + bounds[1][0]}, ${bounds[0][1] + bounds[1][1]}`
+      )
+      .attr('width', bounds[0][0] + bounds[1][0])
+      .attr('height', bounds[0][1] + bounds[1][1])
 
     map
       .selectAll('path')
       .data(json.features)
       .enter()
       .append('path')
+      .attr('class', 'land')
       .attr('d', path)
       // 陽性者に対応した色で境界内を塗る
-      .style('fill', function(d) {
+      .style('fill', d => {
         const cityName = getCity(d)
         return getColor(cityPatientsNumber[cityName])
       })
-      .on('mouseover, mousemove', function(d) {
+      .on('mouseover, mousemove', d => {
         const cityName = getCity(d)
         tooltip
           .style('opacity', 0.9)
           .html(
-            '<strong>' +
-              vm.$t(cityName) +
-              '</strong><br>' +
-              cityPatientsNumber[cityName] +
-              ' ' +
-              vm.$t('人')
+            `<strong>${vm.$t(cityName)}</strong><br>${
+              cityPatientsNumber[cityName]
+            } ${vm.$t('人')}`
           )
-          .style('left', d3.event.pageX + 'px')
-          .style('top', d3.event.pageY - 45 + 'px')
+          .style('left', `${d3.event.pageX}px`)
+          .style('top', `${d3.event.pageY - 45}px`)
       })
-      .on('mouseout', function() {
+      .on('mouseout', () => {
         tooltip.style('opacity', 0)
       })
+
+    // 市区町村名の表示
+    const textGroup = map
+      .selectAll('g')
+      .data(
+        centroid.features.map(v => [
+          projection(v.geometry.coordinates),
+          v.properties.name
+        ])
+      )
+      .enter()
+      .append('g')
+
+    ;['text-back', 'text-front'].forEach(v => {
+      textGroup
+        .append('text')
+        .attr('class', `text ${v}`)
+        .attr('x', d => d[0][0])
+        .attr('y', d => d[0][1])
+        .text(d => d[1])
+        .on('mouseover, mousemove', d => {
+          const cityName = d[1]
+          tooltip
+            .style('opacity', 0.9)
+            .html(
+              `<strong>${vm.$t(cityName)}</strong><br>${
+                cityPatientsNumber[cityName]
+              } ${vm.$t('人')}`
+            )
+            .style('left', `${d3.event.pageX}px`)
+            .style('top', `${d3.event.pageY - 45}px`)
+        })
+        .on('mouseout', () => {
+          tooltip.style('opacity', 0)
+        })
+    })
+
+    console.log('end drawOsaka()')
   })
-  console.log('end drawOsaka()')
 }
 
 // 陽性者数に応じて塗る色を返す
@@ -293,7 +306,30 @@ $infected-level6: red;
   opacity: 0;
 }
 
-//path:hover {
-//  opacity: 0.5;
-//}
+#map svg {
+  width: 100%;
+}
+
+#map .land {
+  stroke: #333;
+  stroke-width: 1px;
+}
+
+#map .text {
+  font-size: 12px;
+  font-weight: bold;
+
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+
+#map .text-back {
+  stroke: #fff;
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+
+#map .text-front {
+  fill: #000;
+}
 </style>
