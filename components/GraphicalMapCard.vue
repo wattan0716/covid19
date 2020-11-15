@@ -28,6 +28,12 @@
       </table>
     </template>
     <div id="map" ref="map" class="osaka-map" />
+    <date-select-slider
+      :chart-data="chartData"
+      :value="[0, sliderMax]"
+      :slider-max="sliderMax"
+      @sliderInput="sliderUpdate"
+    />
     <p :class="$style.note">
       <a
         href="https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-N03-v2_4.html"
@@ -43,53 +49,103 @@
 
 <script>
 import * as d3 from 'd3'
+import dayjs from 'dayjs'
 import Data from '@/data/data.json'
 import DataView from '@/components/DataView.vue'
+import DateSelectSlider from '@/components/DateSelectSlider.vue'
 
 // 市町村の患者人数の連想配列
 // key:市町村名
 // value:陽性者数
-const cityPatientsNumber = {}
+let cityPatientsNumber = {}
+let map
+let mapDrawn = false // map描画済みフラグ
 
 export default {
   components: {
-    // IbarakiMap,
-    DataView
+    DataView,
+    DateSelectSlider
   },
   data() {
+    // データの一番古い日付
+    const dateMin = dayjs(Data.patients.data[0].date)
+    // データの一番新しい日付
+    const dateMax = dayjs(
+      Data.patients.data[Object.keys(Data.patients.data).length - 1].date
+    )
+    // 日付のダミーデータ
+    const chartData = []
+    for (let i = 0; dateMin.add(i, 'day') <= dateMax; i++) {
+      chartData[i] = { label: dateMin.add(i, 'day') }
+    }
+    // 日付範囲選択スライダーで選択している範囲
+    const graphRange = [0, (dateMax - dateMin) / 86400000 - 1]
+
     const data = {
-      Data
+      Data,
+      dateMin,
+      dateMax,
+      chartData,
+      graphRange
     }
     return data
   },
+  computed: {
+    // スライダーのデータ数
+    sliderMax() {
+      return (this.dateMax - this.dateMin) / 86400000
+    }
+  },
   mounted() {
-    loadYouseiData()
+    this.loadYouseiData()
     drawOsaka(this)
+  },
+  methods: {
+    // 日付範囲選択スライダー変更イベント
+    sliderUpdate(sliderValue) {
+      console.log(sliderValue)
+      this.graphRange = sliderValue
+      this.loadYouseiData()
+      drawOsaka(this, this.$refs.map.clientWidth)
+    },
+    // 陽性者数集計
+    loadYouseiData() {
+      console.log('start loadYouseiData()')
+      // 初期化
+      cityPatientsNumber = {}
+
+      const patients = Data.patients.data
+
+      const minPos = this.graphRange[0]
+      const maxPos = this.graphRange[1]
+      const minDate = dayjs(this.chartData[minPos].label)
+      const maxDate = dayjs(this.chartData[maxPos].label)
+
+      for (const key of patients) {
+        const date = dayjs(key.date)
+        cityPatientsNumber[key.居住地] = cityPatientsNumber[key.居住地] || 0
+        // 日付の範囲ならカウント
+        if (minDate <= date && date <= maxDate) {
+          cityPatientsNumber[key.居住地] += 1
+        }
+      }
+
+      console.log('end loadYouseiData()')
+    }
   }
-}
-
-function loadYouseiData() {
-  console.log('start loadYouseiData()')
-
-  const patients = Data.patients.data
-
-  for (const key of patients) {
-    cityPatientsNumber[key.居住地] = cityPatientsNumber[key.居住地] || 0
-    ++cityPatientsNumber[key.居住地]
-  }
-
-  console.log('end loadYouseiData()')
 }
 
 // 大阪府描画
 function drawOsaka(vm) {
   console.log('start drawOsaka()')
 
-  // マップ描画
-  const map = d3
-    .select('#map')
-    .append('svg')
-    .append('g')
+  // マップ描画領域作成（初回のみ）
+  if (!mapDrawn) {
+    map = d3
+      .select('#map')
+      .append('svg')
+      .append('g')
+  }
 
   // staticフォルダのgeoJSONファイルをhttp経由で読み込む
   Promise.all([
@@ -133,55 +189,23 @@ function drawOsaka(vm) {
       .attr('width', bounds[0][0] + bounds[1][0])
       .attr('height', bounds[0][1] + bounds[1][1])
 
-    map
-      .selectAll('path')
-      .data(json.features)
-      .enter()
-      .append('path')
-      .attr('class', 'land')
-      .attr('d', path)
-      // 陽性者に対応した色で境界内を塗る
-      .style('fill', d => {
-        const cityName = getCity(d)
-        return getColor(cityPatientsNumber[cityName])
-      })
-      .on('mouseover, mousemove', d => {
-        const cityName = getCity(d)
-        tooltip
-          .style('opacity', 0.9)
-          .html(
-            `<strong>${vm.$t(cityName)}</strong><br>${
-              cityPatientsNumber[cityName]
-            } ${vm.$t('人')}`
-          )
-          .style('left', `${d3.event.pageX}px`)
-          .style('top', `${d3.event.pageY - 45}px`)
-      })
-      .on('mouseout', () => {
-        tooltip.style('opacity', 0)
-      })
-
-    // 市区町村名の表示
-    const textGroup = map
-      .selectAll('g')
-      .data(
-        centroid.features.map(v => [
-          projection(v.geometry.coordinates),
-          v.properties.name
-        ])
-      )
-      .enter()
-      .append('g')
-
-    ;['text-back', 'text-front'].forEach(v => {
-      textGroup
-        .append('text')
-        .attr('class', `text ${v}`)
-        .attr('x', d => d[0][0])
-        .attr('y', d => d[0][1])
-        .text(d => d[1])
-        .on('mouseover, mousemove', d => {
-          const cityName = d[1]
+    if (!mapDrawn) {
+      // 初回は地図表示
+      map
+        .selectAll('path')
+        .data(json.features)
+        .enter()
+        .append('path')
+        .attr('class', 'land')
+        .attr('d', path)
+        // 陽性者に対応した色で境界内を塗る
+        .style('fill', function(d) {
+          const cityName = getCity(d)
+          return getColor(cityPatientsNumber[cityName])
+        })
+        // マウスオーバーでツールチップ表示
+        .on('mouseover, mousemove', function(d) {
+          const cityName = getCity(d)
           tooltip
             .style('opacity', 0.9)
             .html(
@@ -189,13 +213,61 @@ function drawOsaka(vm) {
                 cityPatientsNumber[cityName]
               } ${vm.$t('人')}`
             )
-            .style('left', `${d3.event.pageX}px`)
-            .style('top', `${d3.event.pageY - 45}px`)
+            .style('left', d3.event.pageX + 'px')
+            .style('top', d3.event.pageY - 45 + 'px')
         })
-        .on('mouseout', () => {
+        .on('mouseout', function() {
           tooltip.style('opacity', 0)
         })
-    })
+
+      // 市区町村名の表示
+      const textGroup = map
+        .selectAll('g')
+        .data(
+          centroid.features.map(v => [
+            projection(v.geometry.coordinates),
+            v.properties.name
+          ])
+        )
+        .enter()
+        .append('g')
+
+      ;['text-back', 'text-front'].forEach(v => {
+        textGroup
+          .append('text')
+          .attr('class', `text ${v}`)
+          .attr('x', d => d[0][0])
+          .attr('y', d => d[0][1])
+          .text(d => d[1])
+          .on('mouseover, mousemove', d => {
+            const cityName = d[1]
+            tooltip
+              .style('opacity', 0.9)
+              .html(
+                `<strong>${vm.$t(cityName)}</strong><br>${
+                  cityPatientsNumber[cityName]
+                } ${vm.$t('人')}`
+              )
+              .style('left', `${d3.event.pageX}px`)
+              .style('top', `${d3.event.pageY - 45}px`)
+          })
+          .on('mouseout', () => {
+            tooltip.style('opacity', 0)
+          })
+      })
+
+      // 地図表示済みに設定
+      mapDrawn = true
+    } else {
+      // ２回目以降は更新のみ
+      map
+        .selectAll('path')
+        // 陽性者に対応した色で境界内を塗る
+        .style('fill', function(d) {
+          const cityName = getCity(d)
+          return getColor(cityPatientsNumber[cityName])
+        })
+    }
 
     console.log('end drawOsaka()')
   })
