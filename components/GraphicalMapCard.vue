@@ -256,6 +256,19 @@ function drawOsaka(vm) {
           })
       })
 
+      // 左側にデータ表示
+      let i = 0
+      for (const [key, value] of Object.entries(cityPatientsNumber)) {
+        map
+          .append('text')
+          .attr('x', 20)
+          .attr('y', function() {
+            return i++ * 13 + 20
+          })
+          .style('font-size', 12 + 'px')
+          .text(key + ': ' + value)
+      }
+
       // 地図表示済みに設定
       mapDrawn = true
     } else {
@@ -267,6 +280,20 @@ function drawOsaka(vm) {
           const cityName = getCity(d)
           return getColor(cityPatientsNumber[cityName])
         })
+
+      // 左側にデータ表示
+      let i = 0
+      d3.selectAll('text').remove()
+      for (const [key, value] of Object.entries(cityPatientsNumber)) {
+        map
+          .append('text')
+          .attr('x', 20)
+          .attr('y', function() {
+            return i++ * 13 + 20
+          })
+          .style('font-size', 12 + 'px')
+          .text(key + ': ' + value)
+      }
     }
 
     console.log('end drawOsaka()')
