@@ -13,15 +13,15 @@
       <table :class="$style.note2">
         <tbody>
           <tr>
-            <td><span class="color-test infected-level1" />1-5</td>
-            <td><span class="color-test infected-level2" />6-10</td>
-            <td><span class="color-test infected-level3" />11-15</td>
+            <td><span class="color-test infected-level1" />0</td>
+            <td><span class="color-test infected-level2" />1-4</td>
+            <td><span class="color-test infected-level3" />5-19</td>
           </tr>
           <tr>
-            <td><span class="color-test infected-level4" />16-20</td>
-            <td><span class="color-test infected-level5" />21-30</td>
+            <td><span class="color-test infected-level4" />20-49</td>
+            <td><span class="color-test infected-level5" />50-99</td>
             <td>
-              <span class="color-test infected-level6" />31 {{ $t('以上') }}
+              <span class="color-test infected-level6" />100 {{ $t('以上') }}
             </td>
           </tr>
         </tbody>
@@ -285,13 +285,13 @@ function updateData() {
 function getColor(num) {
   if (num > 99) {
     return 'red'
-  } else if (num > 9) {
+  } else if (num > 49) {
     return 'deeppink'
-  } else if (num > 4) {
+  } else if (num > 19) {
     return 'magenta'
-  } else if (num > 1) {
+  } else if (num > 4) {
     return 'pink'
-  } else if (num === 1) {
+  } else if (num > 0) {
     return 'lemonchiffon'
   } else if (num === 0) {
     return 'white'
