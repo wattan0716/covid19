@@ -32,6 +32,7 @@
       :chart-data="chartData"
       :value="[0, sliderMax]"
       :slider-max="sliderMax"
+      :min-range="0"
       @sliderInput="sliderUpdate"
     />
     <p :class="$style.note">
@@ -341,32 +342,26 @@ $infected-level6: red;
   display: inline-block;
   margin: 0 0.5rem 0 0;
 }
-// 1-5
 .infected-level1 {
   fill: $infected-level1 !important;
   background-color: $infected-level1;
 }
-// 6-10
 .infected-level2 {
   fill: $infected-level2 !important;
   background-color: $infected-level2;
 }
-// 10-15
 .infected-level3 {
   fill: $infected-level3 !important;
   background-color: $infected-level3;
 }
-// 15-20
 .infected-level4 {
   fill: $infected-level4 !important;
   background-color: $infected-level4;
 }
-// 21-30
 .infected-level5 {
   fill: $infected-level5 !important;
   background-color: $infected-level5;
 }
-// 31-
 .infected-level6 {
   fill: $infected-level6 !important;
   background-color: $infected-level6;
