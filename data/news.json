@@ -2,6 +2,11 @@
     "newsItems": [
         {
             "date": "",
+            "url": "./data/patients.csv",
+            "text": "11月16日以降、保健所業務の効率化のため、日々の感染状況の公表における個票を廃止したことに伴い、「陽性者の属性」の掲載を終了します。11月15日までのデータはこちらでご覧いただけます。"
+        },
+        {
+            "date": "",
             "url": "http://www.pref.osaka.lg.jp/iryo/osakakansensho/corona_model.html",
             "text": "モニタリング指標の状況について（外部サイト）"
         },

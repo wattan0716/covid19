@@ -30,8 +30,12 @@
           :date="Data.patients.date"
           :unit="$t('人')"
           :url="$t('./data/summary.csv')"
+          :note="
+            $t('※11月15日までは再陽性者を除き、11月16日以降は再陽性者を含む')
+          "
         />
       </v-col>
+      <!-- 
       <v-col cols="12" md="6" class="DataCard">
         <data-table
           :title="$t('陽性者の属性')"
@@ -44,6 +48,7 @@
           :url="$t('./data/patients.csv')"
         />
       </v-col>
+      -->
       <v-col cols="12" md="6" class="DataCard">
         <time-bar-chart
           :title="$t('退院・解除済累計')"
@@ -64,6 +69,11 @@
           :date="Data.inspections_summary.date"
           :unit="$t('件.tested')"
           :url="$t('./data/summary.csv')"
+          :note="
+            $t(
+              '※11月15日までは再陽性検査数を除き、11月16日以降は再陽性検査数を含む'
+            )
+          "
         />
       </v-col>
       <v-col cols="12" md="6" class="DataCard">
