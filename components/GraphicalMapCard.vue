@@ -59,7 +59,6 @@ import DateSelectSlider from '@/components/DateSelectSlider.vue'
 // value:陽性者数
 let cityPatientsNumber = {}
 let map
-let mapDrawn = false // map描画済みフラグ
 
 export default {
   components: {
@@ -99,6 +98,7 @@ export default {
   mounted() {
     this.loadYouseiData()
     drawOsaka(this)
+    updateData()
   },
   methods: {
     // 日付範囲選択スライダー変更イベント
@@ -106,7 +106,7 @@ export default {
       console.log(sliderValue)
       this.graphRange = sliderValue
       this.loadYouseiData()
-      drawOsaka(this, this.$refs.map.clientWidth)
+      updateData()
     },
     // 陽性者数集計
     loadYouseiData() {
@@ -139,13 +139,11 @@ export default {
 function drawOsaka(vm) {
   console.log('start drawOsaka()')
 
-  // マップ描画領域作成（初回のみ）
-  if (!mapDrawn) {
-    map = d3
-      .select('#map')
-      .append('svg')
-      .append('g')
-  }
+  // マップ描画領域作成
+  map = d3
+    .select('#map')
+    .append('svg')
+    .append('g')
 
   // staticフォルダのgeoJSONファイルをhttp経由で読み込む
   Promise.all([
@@ -189,23 +187,57 @@ function drawOsaka(vm) {
       .attr('width', bounds[0][0] + bounds[1][0])
       .attr('height', bounds[0][1] + bounds[1][1])
 
-    if (!mapDrawn) {
-      // 初回は地図表示
-      map
-        .selectAll('path')
-        .data(json.features)
-        .enter()
-        .append('path')
-        .attr('class', 'land')
-        .attr('d', path)
-        // 陽性者に対応した色で境界内を塗る
-        .style('fill', function(d) {
-          const cityName = getCity(d)
-          return getColor(cityPatientsNumber[cityName])
-        })
-        // マウスオーバーでツールチップ表示
-        .on('mouseover, mousemove', function(d) {
-          const cityName = getCity(d)
+    // 地図表示
+    map
+      .selectAll('path')
+      .data(json.features)
+      .enter()
+      .append('path')
+      .attr('class', 'land')
+      .attr('d', path)
+      // 陽性者に対応した色で境界内を塗る
+      .style('fill', function(d) {
+        const cityName = getCity(d)
+        return getColor(cityPatientsNumber[cityName])
+      })
+      // マウスオーバーでツールチップ表示
+      .on('mouseover, mousemove', function(d) {
+        const cityName = getCity(d)
+        tooltip
+          .style('opacity', 0.9)
+          .html(
+            `<strong>${vm.$t(cityName)}</strong><br>${
+              cityPatientsNumber[cityName]
+            } ${vm.$t('人')}`
+          )
+          .style('left', d3.event.pageX + 'px')
+          .style('top', d3.event.pageY - 45 + 'px')
+      })
+      .on('mouseout', function() {
+        tooltip.style('opacity', 0)
+      })
+
+    // 市区町村名の表示
+    const textGroup = map
+      .selectAll('g')
+      .data(
+        centroid.features.map(v => [
+          projection(v.geometry.coordinates),
+          v.properties.name
+        ])
+      )
+      .enter()
+      .append('g')
+
+    ;['text-back', 'text-front'].forEach(v => {
+      textGroup
+        .append('text')
+        .attr('class', `text ${v}`)
+        .attr('x', d => d[0][0])
+        .attr('y', d => d[0][1])
+        .text(d => d[1])
+        .on('mouseover, mousemove', d => {
+          const cityName = d[1]
           tooltip
             .style('opacity', 0.9)
             .html(
@@ -213,77 +245,40 @@ function drawOsaka(vm) {
                 cityPatientsNumber[cityName]
               } ${vm.$t('人')}`
             )
-            .style('left', d3.event.pageX + 'px')
-            .style('top', d3.event.pageY - 45 + 'px')
+            .style('left', `${d3.event.pageX}px`)
+            .style('top', `${d3.event.pageY - 45}px`)
         })
-        .on('mouseout', function() {
+        .on('mouseout', () => {
           tooltip.style('opacity', 0)
         })
-
-      // 市区町村名の表示
-      const textGroup = map
-        .selectAll('g')
-        .data(
-          centroid.features.map(v => [
-            projection(v.geometry.coordinates),
-            v.properties.name
-          ])
-        )
-        .enter()
-        .append('g')
-
-      ;['text-back', 'text-front'].forEach(v => {
-        textGroup
-          .append('text')
-          .attr('class', `text ${v}`)
-          .attr('x', d => d[0][0])
-          .attr('y', d => d[0][1])
-          .text(d => d[1])
-          .on('mouseover, mousemove', d => {
-            const cityName = d[1]
-            tooltip
-              .style('opacity', 0.9)
-              .html(
-                `<strong>${vm.$t(cityName)}</strong><br>${
-                  cityPatientsNumber[cityName]
-                } ${vm.$t('人')}`
-              )
-              .style('left', `${d3.event.pageX}px`)
-              .style('top', `${d3.event.pageY - 45}px`)
-          })
-          .on('mouseout', () => {
-            tooltip.style('opacity', 0)
-          })
-      })
-    } else {
-      // ２回目以降は更新のみ
-      map
-        .selectAll('path')
-        // 陽性者に対応した色で境界内を塗る
-        .style('fill', function(d) {
-          const cityName = getCity(d)
-          return getColor(cityPatientsNumber[cityName])
-        })
-    }
-
-    // 左側にデータ表示
-    let i = 0
-    map.selectAll('text').remove()
-    for (const [key, value] of Object.entries(cityPatientsNumber)) {
-      map
-        .append('text')
-        .attr('x', 20)
-        .attr('y', function() {
-          return i++ * 13 + 20
-        })
-        .style('font-size', 12 + 'px')
-        .text(key + ': ' + value)
-    }
-
-    // 地図表示済みに設定
-    mapDrawn = true
+    })
     console.log('end drawOsaka()')
   })
+}
+
+function updateData() {
+  map
+    .selectAll('path')
+    // 陽性者に対応した色で境界内を塗る
+    .style('fill', function(d) {
+      const cityName = getCity(d)
+      return getColor(cityPatientsNumber[cityName])
+    })
+
+  // 左側にデータ表示
+  let i = 0
+  map.selectAll('#map-data-list').remove()
+  for (const [key, value] of Object.entries(cityPatientsNumber)) {
+    map
+      .append('text')
+      .attr('id', 'map-data-list')
+      .attr('x', 20)
+      .attr('y', function() {
+        return i++ * 13 + 20
+      })
+      .style('font-size', 12 + 'px')
+      .text(key + ': ' + value)
+  }
 }
 
 // 陽性者数に応じて塗る色を返す
