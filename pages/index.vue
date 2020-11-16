@@ -130,7 +130,6 @@ import TimeStackedBarChart2 from '@/components/TimeStackedBarChart2.vue'
 import WhatsNew from '@/components/WhatsNew.vue'
 import StaticInfo from '@/components/StaticInfo.vue'
 import Data from '@/data/data.json'
-import DataTable from '@/components/DataTable.vue'
 import formatGraph from '@/utils/formatGraph'
 import formatTable from '@/utils/formatTable'
 import formatConfirmedCases from '@/utils/formatConfirmedCases'
@@ -144,7 +143,6 @@ export default {
     TimeBarChart,
     WhatsNew,
     StaticInfo,
-    DataTable,
     SvgCard,
     ConfirmedCasesTable,
     TimeStackedBarChart,
