@@ -75,11 +75,12 @@
             </li>
             <li>
               <div :class="[$style.row, $style['is-gray']]">
-                <span v-text="$t('入院調整中')" />
+                <span v-text="$t('入院等調整中')" />
                 <span :class="$style.value"
                   >{{ 入院調整中 }}{{ $t('人') }}</span
                 >
               </div>
+              <!--
               <ul
                 :class="[
                   $style.container,
@@ -104,6 +105,7 @@
                   </div>
                 </li>
               </ul>
+              -->
             </li>
             <li>
               <div :class="[$style.row, $style['is-gray']]">
@@ -117,6 +119,7 @@
                 <span :class="$style.value">{{ 宿泊療養 }}{{ $t('人') }}</span>
               </div>
             </li>
+            <!--
             <li>
               <div :class="[$style.row, $style['is-gray']]">
                 <span>{{ $t('療養等調整中') }}</span>
@@ -125,6 +128,7 @@
                 >
               </div>
             </li>
+            -->
           </ul>
         </li>
         <li>
