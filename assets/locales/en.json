@@ -185,5 +185,17 @@
   "大阪府では、府民からの各種相談に応えるため、専用の府民相談窓口を設置しています。": "Osaka Prefecture has set up several dedicated helplines to respond to various concerns from Osaka residents.",
   "詳しくは上記リンクより案内をご覧下さい。": "Please see the link above for further details.",
   "入院待機中": "(1)Number of people waiting to be hospitalized",
-  "入院もしくは療養方法の調整中": "(2)Number of people who are not decided yet where to stay for the recuperation"
+  "入院もしくは療養方法の調整中": "(2)Number of people who are not decided yet where to stay for the recuperation",
+  "1ページ当たり": "1ページ当たり",
+  "{itemsLength} 項目中 {pageStart} - {pageStop}": "{itemsLength} 項目中 {pageStart} - {pageStop}",
+  "本サイトの掲載内容に関するお問い合わせについて": "Contact information on this site",
+  "本サイトの掲載内容に関することについては、大阪府健康医療部保健医療室感染症対策課にお問い合わせください。": "If you have any questions about this site, please contact Infectious Diseases Control Division, Public Health and Medical Administration Office, Department of Public Health and Medical Affairs, Osaka Prefectural Government.",
+  "モニタリング指標の状況について（外部サイト）": "Situations of monitoring points(the external website)",
+  "新型コロナウイルス感染症患者の発生状況について（外部サイト）": "Situations around new infection cases (external website)",
+  "11月16日以降、保健所業務の効率化のため、日々の感染状況の公表における個票を廃止したことに伴い、「陽性者の属性」の掲載を終了します。11月15日までのデータはこちらでご覧いただけます。 ": "Reporting of the individual data (age, sex, residential area, etc.) of each positive case on this site was finished on November 15, as the report of individual data in the daily infection situation disclosure was abolished to streamline each Public Health Center’s work. You can see the data of up to November 15 here. ",
+  "入院等調整中": "Awaiting guidance on hospital admission, etc.",
+  "※11月15日までは再陽性者を除き、11月16日以降は再陽性者を含む": "*The number of those who re-tested positive is included after November 16 while it is excluded up to November 15.",
+  "※11月16日以降、検査実施件数に再陽性検査数を含む": "After November 16, the number of re-tests is included in the total number of tests conducted ",
+  "オープンデータへのリンク": "Link to open-data",
+  "※各自治体からの報告状況により数値が後日更新される場合があります": "The number might be updated at a later date depending on the report from each municipality."
 }
