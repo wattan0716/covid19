@@ -118,6 +118,17 @@
           :url="$t('./data/contacts1.csv')"
         />
       </v-col>
+      <v-col cols="12" md="6" class="DataCard">
+        <time-bar-chart
+          :title="$t('発症日別による陽性者数の推移')"
+          :title-id="'number-of-onset'"
+          :chart-id="'time-bar-chart-onset'"
+          :chart-data="onsetGraph"
+          :date="Data.onset_summary.date"
+          :unit="$t('件.reports')"
+          :url="$t('./data/onset.csv')"
+        />
+      </v-col>
     </v-row>
   </div>
 </template>
@@ -181,6 +192,8 @@ export default {
     const contacts2Labels = Data.contacts2_summary.labels
     // 治療終了者数
     const treatedGraph = formatGraph(Data.treated_summary.data)
+    // 発症日別による陽性者数の推移
+    const onsetGraph = formatGraph(Data.onset_summary.data)
 
     const sumInfoOfPatients = {
       lText: patientsGraph[
@@ -227,6 +240,7 @@ export default {
       contacts2Items,
       contacts2Labels,
       treatedGraph,
+      onsetGraph,
       sumInfoOfPatients,
       headerItem: {
         icon: 'mdi-chart-timeline-variant',

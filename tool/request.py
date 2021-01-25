@@ -43,6 +43,9 @@ class DataJson:
         }
         # 退院・解除済累計
         self.treated_summary_json = {"date": "", "data": []}
+        # 発症日
+        self.onset_summary_json = {"date": "", "data": []}
+        self.onset_open_data_json = {"date": "", "data": []}
         # 最終更新
         jst = timezone(timedelta(hours=9), 'JST')
         self.lastUpdate_json = datetime.today().astimezone(jst).strftime(
@@ -310,6 +313,23 @@ class DataJson:
             self.main_summary_json["children"][0]["children"][7]["value"] = \
                 int(record['府外健康観察']['value'])
 
+        print("発症日の取得START")
+        # 「発症日」の取得
+        records = self.get_kintone_records('1161', 'order by 発症日 asc')
+        for record in records['records']:
+            data = {}
+            data['日付'] = record['発症日']['value'] + 'T08:00:00.000Z'
+            data['小計'] = int(record['人数']['value'])
+            self.onset_summary_json['data'].append(data)
+            d_date = datetime.strptime(record['発症日']['value'], "%Y-%m-%d")
+            self.onset_summary_json["date"] = d_date.strftime('%Y/%m/%d') + ' 00:00'
+            # オープンデータ用
+            data = {}
+            data['発症日'] = record['発症日']['value']
+            data['人数'] = int(record['人数']['value'])
+            self.onset_open_data_json['data'].append(data)
+            self.onset_open_data_json["date"] = record['発症日']['value']
+
         print("jsonまとめSTART")
         # jsonまとめ
         self.data_json = {
@@ -320,12 +340,14 @@ class DataJson:
             "contacts2_summary": self.contacts2_summary_json,
             "transmission_route_summary": self.transmission_route_json,
             "treated_summary": self.treated_summary_json,
+            "onset_summary": self.onset_summary_json,
             "lastUpdate": self.lastUpdate_json,
             "main_summary": self.main_summary_json,
             "patients_open": self.patients_open_data_json,
             "summary_open": self.summary_open_data_json,
             "contacts1_open": self.contacts1_open_data_json,
-            "contacts2_open": self.contacts2_open_data_json
+            "contacts2_open": self.contacts2_open_data_json,
+            "onset_open": self.onset_open_data_json
         }
         if self.data_json['patients']['date'] == self.current_data_json['patients']['date']:
             self.data_json = self.current_data_json
@@ -376,5 +398,9 @@ if __name__ == "__main__":
     if 'contacts2_open' in data:
         contacts2_open_data = data.pop('contacts2_open')
         DataJson().dumps_open_json('contacts2.csv', contacts2_open_data)
+
+    if 'onset_open' in data:
+        contacts2_open_data = data.pop('onset_open')
+        DataJson().dumps_open_json('onset.csv', contacts2_open_data)
 
     DataJson().dumps_json('data.json', data)
