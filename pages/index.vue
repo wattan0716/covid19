@@ -90,6 +90,17 @@
         />
       </v-col>
       <v-col cols="12" md="6" class="DataCard">
+        <time-bar-chart
+          :title="$t('発症日別による陽性者数の推移')"
+          :title-id="'number-of-onset'"
+          :chart-id="'time-bar-chart-onset'"
+          :chart-data="onsetGraph"
+          :date="Data.onset_summary.date"
+          :unit="$t('件.reports')"
+          :url="$t('./data/onset.csv')"
+        />
+      </v-col>
+      <v-col cols="12" md="6" class="DataCard">
         <time-stacked-bar-chart
           :title="$t('新型コロナ受診相談センターへの相談件数')"
           :title-id="'number-of-contacts２'"
@@ -116,17 +127,6 @@
           :date="Data.contacts1_summary.date"
           :unit="$t('件.reports')"
           :url="$t('./data/contacts1.csv')"
-        />
-      </v-col>
-      <v-col cols="12" md="6" class="DataCard">
-        <time-bar-chart
-          :title="$t('発症日別による陽性者数の推移')"
-          :title-id="'number-of-onset'"
-          :chart-id="'time-bar-chart-onset'"
-          :chart-data="onsetGraph"
-          :date="Data.onset_summary.date"
-          :unit="$t('件.reports')"
-          :url="$t('./data/onset.csv')"
         />
       </v-col>
     </v-row>
