@@ -315,22 +315,23 @@ class DataJson:
 
         print("発症日の取得START")
         # 「発症日」の取得
+        # 〜〜〜時点は「更新日付」アプリの日付 - 1日とする
+        h_date = datetime.strptime(self.update_json, "%Y/%m/%d %H:%M") - timedelta(days=1)
+        self.onset_summary_json["date"] = h_date.strftime('%Y/%m/%d') + ' 00:00'
+        self.onset_open_data_json["date"] = h_date.strftime('%Y-%m-%d')
         records = self.get_kintone_records('1161', 'order by 発症日 asc')
         for record in records['records']:
             data = {}
             # 発症日は1日前の日付にする必要がある
-            k_date = datetime.strptime(record['発症日']['value'], "%Y-%m-%d")
-            g_date = k_date - timedelta(days=1)
+            g_date = datetime.strptime(record['発症日']['value'], "%Y-%m-%d") - timedelta(days=1)
             data['日付'] = g_date.strftime('%Y-%m-%d') + 'T08:00:00.000Z'
             data['小計'] = int(record['人数']['value'])
             self.onset_summary_json['data'].append(data)
-            self.onset_summary_json["date"] = g_date.strftime('%Y/%m/%d') + ' 00:00'
             # オープンデータ用
             data = {}
             data['発症日'] = g_date.strftime('%Y-%m-%d')
             data['人数'] = int(record['人数']['value'])
             self.onset_open_data_json['data'].append(data)
-            self.onset_open_data_json["date"] = g_date.strftime('%Y-%m-%d')
 
         print("jsonまとめSTART")
         # jsonまとめ
