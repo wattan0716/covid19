@@ -345,9 +345,6 @@ class DataJson:
         # jsonまとめ
         # まずは1個前の状態にする
         self.data_json = copy.copy(self.current_data_json)
-        print(self.lastUpdate_json)
-        print(self.data_json['lastUpdate'])
-        print(self.current_data_json['lastUpdate'])
         if self.patients_json['date'] != self.current_data_json['patients']['date']:
             # 更新日付が異なる場合
             print("「更新日時」変更あり")
@@ -364,10 +361,6 @@ class DataJson:
             self.data_json['summary_open'] = self.summary_open_data_json
             self.data_json['contacts1_open'] = self.contacts1_open_data_json
             self.data_json['contacts2_open'] = self.contacts2_open_data_json
-
-        print(self.lastUpdate_json)
-        print(self.data_json['lastUpdate'])
-        print(self.current_data_json['lastUpdate'])
 
         if self.onset_summary_json['date'] != self.current_data_json['onset_summary']['date']:
             print("「更新日時（発症日）」変更あり")
