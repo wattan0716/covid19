@@ -330,8 +330,7 @@ class DataJson:
         records = self.get_kintone_records('1161', 'order by 発症日 asc')
         for record in records['records']:
             data = {}
-            # 発症日は1日前の日付にする必要がある
-            g_date = datetime.strptime(record['発症日']['value'], "%Y-%m-%d") - timedelta(days=1)
+            g_date = datetime.strptime(record['発症日']['value'], "%Y-%m-%d")
             data['日付'] = g_date.strftime('%Y-%m-%d') + 'T08:00:00.000Z'
             data['小計'] = int(record['人数']['value'])
             self.onset_summary_json['data'].append(data)
