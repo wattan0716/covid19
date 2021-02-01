@@ -132,7 +132,7 @@ class DataJson:
         # 「更新日付」の取得
         records = self.get_kintone_records('1166', '')
         for record in records['records']:
-            h_date = datetime.strptime(record['日付']['value'], "%Y-%m-%d") - timedelta(days=1)
+            h_date = datetime.strptime(record['日付']['value'], "%Y-%m-%d")
             self.update_onset_json = h_date.strftime('%Y/%m/%d') + ' 00:00'
 
         print("陽性者の取得START")
