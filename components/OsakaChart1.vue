@@ -147,29 +147,20 @@ export default {
     }
   },
   computed: {
-    /* displayCumulativeRatio() {
-      const lastDay = this.chartData.slice(-1)[0].cumulative
-      const lastDayBefore = this.chartData.slice(-2)[0].cumulative
-      return this.formatDayBeforeRatio(lastDay - lastDayBefore)
-    }, */
-    /* displayTransitionRatio() {
-      const lastDay = this.chartData.slice(-1)[0].transition
-      const lastDayBefore = this.chartData.slice(-2)[0].transition
-      return this.formatDayBeforeRatio(lastDay - lastDayBefore)
-    }, */
     displayInfo() {
+      const diff =
+        this.chartData[3][this.chartData[3].length - 2] -
+        this.chartData[3][this.chartData[3].length - 1]
+      let stext = ''
+      if (diff < 0) {
+        stext = '+' + diff.toLocaleString() + '%'
+      } else {
+        stext = '-' + diff.toLocaleString() + '%'
+      }
       return {
-        /* lText: this.chartData[
-          this.chartData.length - 1
-        ].cumulative.toLocaleString(), */
-        lText: 'lText',
-        /* sText: `${this.chartData.slice(-1)[0].label} ${this.$t(
-          '累計値'
-        )}（${this.$t('前日比')}: ${this.displayCumulativeRatio} ${
-          this.unit
-        }）`, */
-        sText: 'sText',
-        unit: this.unit
+        lText: this.chartData[3][this.chartData[3].length - 1].toLocaleString(),
+        sText: '（前日比：' + stext + '）',
+        unit: '%'
       }
     },
     displayData() {
@@ -223,9 +214,12 @@ export default {
           displayColors: false,
           callbacks: {
             label(tooltipItem) {
-              const labelText = `${parseInt(
-                tooltipItem.value
-              ).toLocaleString()} ${unit}`
+              let labelText = ''
+              if (tooltipItem.datasetIndex === 2) {
+                labelText = tooltipItem.value.toLocaleString() + '%'
+              } else {
+                labelText = parseInt(tooltipItem.value).toLocaleString() + unit
+              }
               return labelText
             }
           }
@@ -273,7 +267,7 @@ export default {
               time: {
                 unit: 'month',
                 displayFormats: {
-                  month: 'YYYY-MM'
+                  month: 'M月'
                 }
               }
             }
@@ -391,7 +385,7 @@ export default {
               time: {
                 unit: 'month',
                 displayFormats: {
-                  month: 'YYYY-MM'
+                  month: 'M月'
                 }
               }
             }
