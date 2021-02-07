@@ -71,7 +71,6 @@
 <script>
 import dayjs from 'dayjs'
 import DataView from '@/components/DataView.vue'
-import DataSelector from '@/components/DataSelector.vue'
 import DataViewBasicInfoPanel from '@/components/DataViewBasicInfoPanel.vue'
 import OpenDataLink from '@/components/OpenDataLink.vue'
 import ScrollableChart from '@/components/ScrollableChart.vue'
@@ -80,7 +79,6 @@ import { yAxesBgPlugin, yAxesBgRightPlugin } from '@/plugins/vue-chart'
 export default {
   components: {
     DataView,
-    DataSelector,
     DataViewBasicInfoPanel,
     ScrollableChart,
     OpenDataLink
