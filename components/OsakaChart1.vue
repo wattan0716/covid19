@@ -7,8 +7,18 @@
       <li v-for="(item, i) in items" :key="i" @click="onClickLegend(i)">
         <button>
           <div
+            v-if="i === 2"
             :style="{
-              backgroundColor: colorArray[i]
+              backgroundColor: colors[i][0],
+              border: 0,
+              height: '3px'
+            }"
+          />
+          <div
+            v-else
+            :style="{
+              backgroundColor: colors[i][0],
+              borderColor: colors[i][1]
             }"
           />
           <span
@@ -142,7 +152,11 @@ export default {
     return {
       /* dataKind: 'transition', */
       displayLegends: [true, true, true],
-      colorArray: ['#364c97', '#0076eb', '#364c97'],
+      colors: [
+        ['#C4D6ED', '#6F96CD'],
+        ['#00bfff', '#00bfff'],
+        ['#4B5469', '#4B5469']
+      ],
       canvas: true
     }
   },
@@ -186,7 +200,7 @@ export default {
             yAxisID: 'y-axis-1',
             label: 'test2',
             data: this.chartData[2],
-            backgroundColor: '#354F76',
+            backgroundColor: '#00bfff',
             order: 3
           },
           {
@@ -197,7 +211,7 @@ export default {
             pointBackgroundColor: 'rgba(0,0,0,0)',
             pointBorderColor: 'rgba(0,0,0,0)',
             borderColor: '#4B5469',
-            borderWidth: 3,
+            borderWidth: 2,
             fill: false,
             order: 1,
             lineTension: 0
@@ -442,7 +456,7 @@ export default {
         this.dataKind === 'transition' ? 'transition' : 'cumulative'
       const values = this.chartData.map(d => d[dataKind])
       return Math.max(...values) */
-      return Math.max(...this.chartData[3])
+      return 100
     }
   },
   created() {
