@@ -154,7 +154,7 @@ export default {
       displayLegends: [true, true, true],
       colors: [
         ['#C4D6ED', '#6F96CD'],
-        ['#00bfff', '#00bfff'],
+        ['#4071E0', '#4071E0'],
         ['#4B5469', '#4B5469']
       ],
       canvas: true
@@ -200,7 +200,7 @@ export default {
             yAxisID: 'y-axis-1',
             label: 'test2',
             data: this.chartData[2],
-            backgroundColor: '#00bfff',
+            backgroundColor: '#4071E0',
             order: 3
           },
           {

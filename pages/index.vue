@@ -38,11 +38,23 @@
       <v-col cols="12" md="6" class="DataCard">
         <osaka-chart-1
           :title="$t('重症病床使用率')"
-          :title-id="'number-of-confirmed-cases'"
+          :title-id="'severe-bed-usag'"
           :chart-id="'osaka-chart1'"
           :chart-data="osakaGraph1"
           :date="Data.patients.date"
           :items="osaka1Items"
+          :unit="$t('人')"
+          :url="$t('./data/summary.csv')"
+        />
+      </v-col>
+      <v-col cols="12" md="6" class="DataCard">
+        <osaka-chart-1
+          :title="$t('軽症中等症病床使用率')"
+          :title-id="'mild-moderate-bed-usage-rate'"
+          :chart-id="'osaka-chart1'"
+          :chart-data="osakaGraph2"
+          :date="Data.patients.date"
+          :items="osaka2Items"
           :unit="$t('人')"
           :url="$t('./data/summary.csv')"
         />
@@ -154,6 +166,7 @@ import WhatsNew from '@/components/WhatsNew.vue'
 import StaticInfo from '@/components/StaticInfo.vue'
 import Data from '@/data/data.json'
 import OsakaData1 from '@/data/osaka_data_1.json'
+import OsakaData2 from '@/data/osaka_data_2.json'
 import formatGraph from '@/utils/formatGraph'
 import formatTable from '@/utils/formatTable'
 import formatConfirmedCases from '@/utils/formatConfirmedCases'
@@ -243,24 +256,49 @@ export default {
 
     // 感染者数グラフ
     const osaka1Items = ['重症病床確保数', '重症入院患者数', '重症病床使用率']
-    const tmpData = OsakaData1.data.filter(
+    const tmpData1 = OsakaData1.data.filter(
       d => new Date(d.date) >= new Date('2020-01-01')
     )
-    const dateList = tmpData.map(d => d.date)
-    const numberOfCriticallyIllBedsSecured = tmpData.map(
+    const dateList1 = tmpData1.map(d => d.date)
+    const numberOfCriticallyIllBedsSecured1 = tmpData1.map(
       d => d.number_of_critically_ill_beds_secured
     )
-    const numberOfSeverelyInpatients = tmpData.map(
+    const numberOfSeverelyInpatients1 = tmpData1.map(
       d => d.number_of_severely_inpatients
     )
-    const severeBedUsage = tmpData.map(d => d.severe_bed_usage * 100)
-    const updated = OsakaData1.date
+    const severeBedUsage1 = tmpData1.map(d => d.severe_bed_usage * 100)
+    const updated1 = OsakaData1.date
     const osakaGraph1 = [
-      dateList,
-      numberOfCriticallyIllBedsSecured,
-      numberOfSeverelyInpatients,
-      severeBedUsage,
-      updated
+      dateList1,
+      numberOfCriticallyIllBedsSecured1,
+      numberOfSeverelyInpatients1,
+      severeBedUsage1,
+      updated1
+    ]
+    // 感染者数グラフ
+    const osaka2Items = [
+      '軽症中等症病床確保数',
+      '軽症中等症入院患者数',
+      '軽症中等症病床使用率'
+    ]
+    const tmpData2 = OsakaData2.data.filter(
+      d => new Date(d.date) >= new Date('2020-01-01')
+    )
+    const dateList2 = tmpData2.map(d => d.date)
+    const numberOfCriticallyIllBedsSecured2 = tmpData2.map(
+      d => d.number_of_critically_ill_beds_secured
+    )
+    const numberOfSeverelyInpatients2 = tmpData2.map(
+      d => d.number_of_severely_inpatients
+    )
+    const severeBedUsage2 = tmpData2.map(d => d.severe_bed_usage * 100)
+    const updated2 = OsakaData2.date
+    const osakaGraph2 = [
+      dateList2,
+      numberOfCriticallyIllBedsSecured2,
+      numberOfSeverelyInpatients2,
+      severeBedUsage2,
+      updated2
     ]
 
     const data = {
@@ -281,6 +319,8 @@ export default {
       sumInfoOfPatients,
       osakaGraph1,
       osaka1Items,
+      osakaGraph2,
+      osaka2Items,
       headerItem: {
         icon: 'mdi-chart-timeline-variant',
         title: this.$t('大阪府の最新感染動向'),
