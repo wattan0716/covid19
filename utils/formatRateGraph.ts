@@ -28,7 +28,7 @@ export default (updated: Date, data: DataType[]) => {
       dateList.push(dayjs(date).format('YYYY-MM-DD'))
       denomList.push(d.denominator)
       numerList.push(d.numerator)
-      rateList.push(d.rate * 100)
+      rateList.push(d.rate)
     })
 
   const graphData: GraphDataType = {
