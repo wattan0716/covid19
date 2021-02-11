@@ -283,7 +283,7 @@ export default {
               time: {
                 unit: 'month',
                 displayFormats: {
-                  month: 'M月'
+                  month: 'MMM'
                 }
               }
             }
@@ -333,7 +333,7 @@ export default {
     },
     displayDataHeader() {
       return {
-        labels: ['2020/1/1'],
+        labels: ['2020-1-1'],
         datasets: [
           {
             data: [this.chartData.denomList[0]],
@@ -401,7 +401,7 @@ export default {
               time: {
                 unit: 'month',
                 displayFormats: {
-                  month: 'M月'
+                  month: 'MMM'
                 }
               }
             }

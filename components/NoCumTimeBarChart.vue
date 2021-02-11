@@ -78,9 +78,9 @@ export default {
       default: 'no-cum-time-bar-chart'
     },
     chartData: {
-      type: Array,
+      type: Object,
       required: false,
-      default: () => []
+      default: () => {}
     },
     date: {
       type: String,
@@ -115,8 +115,8 @@ export default {
   computed: {
     displayInfo() {
       const diff =
-        this.chartData[1][this.chartData[1].length - 1] -
-        this.chartData[1][this.chartData[1].length - 2]
+        this.chartData.valList[this.chartData.valList.length - 1] -
+        this.chartData.valList[this.chartData.valList.length - 2]
 
       let stext = ''
       if (diff < 0) {
@@ -125,18 +125,20 @@ export default {
         stext = '+' + diff.toLocaleString() + this.unit
       }
       return {
-        lText: this.chartData[1][this.chartData[1].length - 1].toLocaleString(),
+        lText: this.chartData.valList[
+          this.chartData.valList.length - 1
+        ].toLocaleString(),
         sText: '（前日比：' + stext + '）',
         unit: this.unit
       }
     },
     displayData() {
       return {
-        labels: this.chartData[0],
+        labels: this.chartData.dateList,
         datasets: [
           {
             label: '直近1週間の人口10万人あたり新規陽性者数',
-            data: this.chartData[1],
+            data: this.chartData.valList,
             backgroundColor: '#2445b5',
             borderWidth: 0
           }
@@ -199,7 +201,7 @@ export default {
               time: {
                 unit: 'month',
                 displayFormats: {
-                  month: 'M月'
+                  month: 'MMM'
                 }
               }
             }
@@ -228,10 +230,10 @@ export default {
     },
     displayDataHeader() {
       return {
-        labels: ['2020/1/1'],
+        labels: ['2020-1-1'],
         datasets: [
           {
-            data: [Math.max(...this.chartData[1])],
+            data: [Math.max(...this.chartData.valList)],
             backgroundColor: 'transparent',
             borderWidth: 0
           }
@@ -283,7 +285,7 @@ export default {
               time: {
                 unit: 'month',
                 displayFormats: {
-                  month: 'M月'
+                  month: 'MMM'
                 }
               }
             }
@@ -308,7 +310,7 @@ export default {
       }
     },
     scaledTicksYAxisMax() {
-      return Math.max(...this.chartData[1])
+      return Math.max(...this.chartData.valList)
     }
   },
   created() {

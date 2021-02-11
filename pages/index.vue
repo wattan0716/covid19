@@ -40,23 +40,23 @@
           :title="$t('重症病床使用率')"
           :title-id="'severe-bed-usage'"
           :chart-id="'severe-bed-usage'"
-          :chart-data="osakaGraph1"
-          :date="osakaGraph1.updated"
-          :items="osakaItems1"
+          :chart-data="severeBedUsageGraph"
+          :date="severeBedUsageGraph.updated"
+          :items="severeBedUsageItems"
           :unit="$t('人')"
-          :url="$t('./data/summary.csv')"
+          :url="$t('./data/severe-bed-usage.csv')"
         />
       </v-col>
       <v-col cols="12" md="6" class="DataCard">
         <rate-chart
           :title="$t('軽症中等症病床使用率')"
-          :title-id="'mild-moderate-bed-usage-rate'"
-          :chart-id="'mild-moderate-bed-usage-rate'"
-          :chart-data="osakaGraph2"
-          :date="osakaGraph2.updated"
-          :items="osakaItems2"
+          :title-id="'mild-moderate-bed-usage'"
+          :chart-id="'mild-moderate-bed-usage'"
+          :chart-data="mildModerateBedUsageGraph"
+          :date="mildModerateBedUsageGraph.updated"
+          :items="mildModerateBedUsageItems"
           :unit="$t('人')"
-          :url="$t('./data/summary.csv')"
+          :url="$t('./data/mild-moderate-bed-usage.csv')"
         />
       </v-col>
       <v-col cols="12" md="6" class="DataCard">
@@ -64,10 +64,10 @@
           :title="$t('直近1週間の人口10万人あたり新規陽性者数')"
           :title-id="'number-of-new-positives-per-100_000-population'"
           :chart-id="'number-of-new-positives-per-100_000-population'"
-          :chart-data="osakaGraph3"
-          :date="osakaGraph3[2]"
+          :chart-data="numberOfNewPositivesGraph"
+          :date="numberOfNewPositivesGraph.updated"
           :unit="$t('人')"
-          :url="$t('./data/summary.csv')"
+          :url="$t('./data/number-of-new-positives-per-100_000-population.csv')"
         />
       </v-col>
       <!-- 
@@ -176,13 +176,14 @@ import TimeStackedBarChart2 from '@/components/TimeStackedBarChart2.vue'
 import WhatsNew from '@/components/WhatsNew.vue'
 import StaticInfo from '@/components/StaticInfo.vue'
 import Data from '@/data/data.json'
-import OsakaData1 from '@/data/osaka_data_1.json'
-import OsakaData2 from '@/data/osaka_data_2.json'
-import OsakaData3 from '@/data/osaka_data_3.json'
+import SevereBedUsageData from '@/data/severe-bed-usage.json'
+import MildModerateBedUsageData from '@/data/mild-moderate-bed-usage.json'
+import NumberOfNewPositivesData from '@/data/number-of-new-positives-per-100_000-population.json'
 import formatGraph from '@/utils/formatGraph'
 import formatTable from '@/utils/formatTable'
 import formatConfirmedCases from '@/utils/formatConfirmedCases'
 import formatRateGraph from '@/utils/formatRateGraph'
+import formatSimpleGraph from '@/utils/formatSimpleGraph'
 import News from '@/data/news.json'
 import SvgCard from '@/components/SvgCard.vue'
 import ConfirmedCasesTable from '@/components/ConfirmedCasesTable.vue'
@@ -270,23 +271,30 @@ export default {
     }
 
     // 重症病床使用率
-    const osakaGraph1 = formatRateGraph(OsakaData1.date, OsakaData1.data)
-    const osakaItems1 = ['重症病床確保数', '重症入院患者数', '重症病床使用率']
+    const severeBedUsageGraph = formatRateGraph(
+      SevereBedUsageData.date,
+      SevereBedUsageData.data
+    )
+    const severeBedUsageItems = [
+      '重症病床確保数',
+      '重症入院患者数',
+      '重症病床使用率'
+    ]
     // 軽症中等症病床使用率
-    const osakaGraph2 = formatRateGraph(OsakaData2.date, OsakaData2.data)
-    const osakaItems2 = [
+    const mildModerateBedUsageGraph = formatRateGraph(
+      MildModerateBedUsageData.date,
+      MildModerateBedUsageData.data
+    )
+    const mildModerateBedUsageItems = [
       '軽症中等症病床確保数',
       '軽症中等症入院患者数',
       '軽症中等症病床使用率'
     ]
-    // 軽症中等症病床使用率
-    const tmpData3 = OsakaData3.data.filter(
-      d => new Date(d.date) >= new Date('2020-01-01')
+    // 直近1週間の人口10万人あたり新規陽性者数
+    const numberOfNewPositivesGraph = formatSimpleGraph(
+      NumberOfNewPositivesData.date,
+      NumberOfNewPositivesData.data
     )
-    const dateList3 = tmpData3.map(d => d.date)
-    const value3 = tmpData3.map(d => d.value)
-    const updated3 = OsakaData3.date
-    const osakaGraph3 = [dateList3, value3, updated3]
 
     const data = {
       Data,
@@ -304,11 +312,11 @@ export default {
       treatedGraph,
       onsetGraph,
       sumInfoOfPatients,
-      osakaGraph1,
-      osakaItems1,
-      osakaGraph2,
-      osakaItems2,
-      osakaGraph3,
+      severeBedUsageGraph,
+      severeBedUsageItems,
+      mildModerateBedUsageGraph,
+      mildModerateBedUsageItems,
+      numberOfNewPositivesGraph,
       headerItem: {
         icon: 'mdi-chart-timeline-variant',
         title: this.$t('大阪府の最新感染動向'),
