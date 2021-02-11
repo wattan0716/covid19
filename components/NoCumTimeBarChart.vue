@@ -75,7 +75,7 @@ export default {
     chartId: {
       type: String,
       required: false,
-      default: 'osaka-chart2'
+      default: 'no-cum-time-bar-chart'
     },
     chartData: {
       type: Array,

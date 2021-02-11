@@ -36,34 +36,34 @@
         />
       </v-col>
       <v-col cols="12" md="6" class="DataCard">
-        <osaka-chart-1
+        <rate-chart
           :title="$t('重症病床使用率')"
-          :title-id="'osaka-chart1-1'"
-          :chart-id="'osaka-chart1-1'"
+          :title-id="'severe-bed-usage'"
+          :chart-id="'severe-bed-usage'"
           :chart-data="osakaGraph1"
-          :date="osakaGraph1[4]"
+          :date="osakaGraph1.updated"
           :items="osakaItems1"
           :unit="$t('人')"
           :url="$t('./data/summary.csv')"
         />
       </v-col>
       <v-col cols="12" md="6" class="DataCard">
-        <osaka-chart-1
+        <rate-chart
           :title="$t('軽症中等症病床使用率')"
-          :title-id="'osaka-chart1-2'"
-          :chart-id="'osaka-chart1-2'"
+          :title-id="'mild-moderate-bed-usage-rate'"
+          :chart-id="'mild-moderate-bed-usage-rate'"
           :chart-data="osakaGraph2"
-          :date="osakaGraph2[4]"
+          :date="osakaGraph2.updated"
           :items="osakaItems2"
           :unit="$t('人')"
           :url="$t('./data/summary.csv')"
         />
       </v-col>
       <v-col cols="12" md="6" class="DataCard">
-        <osaka-chart-2
+        <no-cum-time-bar-chart
           :title="$t('直近1週間の人口10万人あたり新規陽性者数')"
-          :title-id="'osaka-chart2-1'"
-          :chart-id="'osaka-chart2-1'"
+          :title-id="'number-of-new-positives-per-100_000-population'"
+          :chart-id="'number-of-new-positives-per-100_000-population'"
           :chart-data="osakaGraph3"
           :date="osakaGraph3[2]"
           :unit="$t('人')"
@@ -182,11 +182,12 @@ import OsakaData3 from '@/data/osaka_data_3.json'
 import formatGraph from '@/utils/formatGraph'
 import formatTable from '@/utils/formatTable'
 import formatConfirmedCases from '@/utils/formatConfirmedCases'
+import formatRateGraph from '@/utils/formatRateGraph'
 import News from '@/data/news.json'
 import SvgCard from '@/components/SvgCard.vue'
 import ConfirmedCasesTable from '@/components/ConfirmedCasesTable.vue'
-import OsakaChart1 from '@/components/OsakaChart1.vue'
-import OsakaChart2 from '@/components/OsakaChart2.vue'
+import RateChart from '@/components/RateChart.vue'
+import NoCumTimeBarChart from '@/components/NoCumTimeBarChart.vue'
 
 export default {
   components: {
@@ -198,8 +199,8 @@ export default {
     ConfirmedCasesTable,
     TimeStackedBarChart,
     TimeStackedBarChart2,
-    OsakaChart1,
-    OsakaChart2
+    RateChart,
+    NoCumTimeBarChart
   },
   data() {
     // 感染者数グラフ
@@ -269,42 +270,14 @@ export default {
     }
 
     // 重症病床使用率
+    const osakaGraph1 = formatRateGraph(OsakaData1.date, OsakaData1.data)
     const osakaItems1 = ['重症病床確保数', '重症入院患者数', '重症病床使用率']
-    const tmpData1 = OsakaData1.data.filter(
-      d => new Date(d.date) >= new Date('2020-01-01')
-    )
-    const dateList1 = tmpData1.map(d => d.date)
-    const denominator1 = tmpData1.map(d => d.denominator)
-    const numerator1 = tmpData1.map(d => d.numerator)
-    const percentage1 = tmpData1.map(d => d.percentage * 100)
-    const updated1 = OsakaData1.date
-    const osakaGraph1 = [
-      dateList1,
-      denominator1,
-      numerator1,
-      percentage1,
-      updated1
-    ]
     // 軽症中等症病床使用率
+    const osakaGraph2 = formatRateGraph(OsakaData2.date, OsakaData2.data)
     const osakaItems2 = [
       '軽症中等症病床確保数',
       '軽症中等症入院患者数',
       '軽症中等症病床使用率'
-    ]
-    const tmpData2 = OsakaData2.data.filter(
-      d => new Date(d.date) >= new Date('2020-01-01')
-    )
-    const dateList2 = tmpData2.map(d => d.date)
-    const denominator2 = tmpData2.map(d => d.denominator)
-    const numerator2 = tmpData2.map(d => d.numerator)
-    const percentage2 = tmpData2.map(d => d.percentage * 100)
-    const updated2 = OsakaData2.date
-    const osakaGraph2 = [
-      dateList2,
-      denominator2,
-      numerator2,
-      percentage2,
-      updated2
     ]
     // 軽症中等症病床使用率
     const tmpData3 = OsakaData3.data.filter(

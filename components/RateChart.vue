@@ -107,12 +107,12 @@ export default {
     chartId: {
       type: String,
       required: false,
-      default: 'osaka-chart1'
+      default: 'rate-chart'
     },
     chartData: {
-      type: Array,
+      type: Object,
       required: false,
-      default: () => []
+      default: () => {}
     },
     date: {
       type: String,
@@ -162,8 +162,8 @@ export default {
   computed: {
     displayInfo() {
       const diff =
-        this.chartData[3][this.chartData[3].length - 1] -
-        this.chartData[3][this.chartData[3].length - 2]
+        this.chartData.rateList[this.chartData.rateList.length - 1] -
+        this.chartData.rateList[this.chartData.rateList.length - 2]
 
       let stext = ''
       if (diff < 0) {
@@ -172,20 +172,22 @@ export default {
         stext = '+' + diff.toLocaleString() + '%'
       }
       return {
-        lText: this.chartData[3][this.chartData[3].length - 1].toLocaleString(),
+        lText: this.chartData.rateList[
+          this.chartData.rateList.length - 1
+        ].toLocaleString(),
         sText: '（前日比：' + stext + '）',
         unit: '%'
       }
     },
     displayData() {
       return {
-        labels: this.chartData[0],
+        labels: this.chartData.dateList,
         datasets: [
           {
             type: 'line',
             yAxisID: 'y-axis-1',
             label: 'test1',
-            data: this.chartData[1],
+            data: this.chartData.denomList,
             pointBackgroundColor: 'rgba(0,0,0,0)',
             pointBorderColor: 'rgba(0,0,0,0)',
             borderColor: '#6F96CD',
@@ -199,7 +201,7 @@ export default {
             type: 'bar',
             yAxisID: 'y-axis-1',
             label: 'test2',
-            data: this.chartData[2],
+            data: this.chartData.numerList,
             backgroundColor: '#4071E0',
             order: 3
           },
@@ -207,7 +209,7 @@ export default {
             type: 'line',
             yAxisID: 'y-axis-2',
             label: 'test3',
-            data: this.chartData[3],
+            data: this.chartData.rateList,
             pointBackgroundColor: 'rgba(0,0,0,0)',
             pointBorderColor: 'rgba(0,0,0,0)',
             borderColor: '#4B5469',
@@ -334,19 +336,19 @@ export default {
         labels: ['2020/1/1'],
         datasets: [
           {
-            data: [this.chartData[1][0]],
+            data: [this.chartData.denomList[0]],
             backgroundColor: 'transparent',
             yAxisID: 'y-axis-1',
             borderWidth: 0
           },
           {
-            data: [this.chartData[2][0]],
+            data: [this.chartData.numerList[0]],
             backgroundColor: 'transparent',
             yAxisID: 'y-axis-1',
             borderWidth: 0
           },
           {
-            data: [this.chartData[3][0]],
+            data: [this.chartData.rateList[0]],
             backgroundColor: 'transparent',
             yAxisID: 'y-axis-2',
             borderWidth: 0
@@ -445,7 +447,7 @@ export default {
       }
     },
     scaledTicksYAxisMax() {
-      return Math.max(...this.chartData[1])
+      return Math.max(...this.chartData.denomList)
     },
     scaledTicksYAxisMaxRight() {
       return 100
