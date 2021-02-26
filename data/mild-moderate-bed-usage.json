@@ -1,5 +1,5 @@
 {
-    "date": "2021/02/15 00:00",
+    "date": "2021/02/26 00:00",
     "data": [
         {
             "date": "2020-04-23",
@@ -1794,6 +1794,72 @@
             "denominator": 1728,
             "numerator": 755,
             "rate": 43.7
+        },
+        {
+            "date": "2021-02-16",
+            "denominator": 1728,
+            "numerator": 676,
+            "rate": 39.1
+        },
+        {
+            "date": "2021-02-17",
+            "denominator": 1728,
+            "numerator": 667,
+            "rate": 38.6
+        },
+        {
+            "date": "2021-02-18",
+            "denominator": 1741,
+            "numerator": 637,
+            "rate": 36.6
+        },
+        {
+            "date": "2021-02-19",
+            "denominator": 1741,
+            "numerator": 619,
+            "rate": 35.6
+        },
+        {
+            "date": "2021-02-20",
+            "denominator": 1741,
+            "numerator": 610,
+            "rate": 35.0
+        },
+        {
+            "date": "2021-02-21",
+            "denominator": 1741,
+            "numerator": 624,
+            "rate": 35.8
+        },
+        {
+            "date": "2021-02-22",
+            "denominator": 1751,
+            "numerator": 648,
+            "rate": 37.0
+        },
+        {
+            "date": "2021-02-23",
+            "denominator": 1751,
+            "numerator": 585,
+            "rate": 33.4
+        },
+        {
+            "date": "2021-02-24",
+            "denominator": 1751,
+            "numerator": 604,
+            "rate": 34.5
+        },
+        {
+            "date": "2021-02-25",
+            "denominator": 1755,
+            "numerator": 515,
+            "rate": 29.3
+        },
+        {
+            "date": "2021-02-26",
+            "denominator": 1757,
+            "numerator": 496,
+            "rate": 28.2
         }
     ]
 }
