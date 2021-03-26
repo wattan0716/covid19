@@ -137,7 +137,7 @@ export default {
         labels: this.chartData.dateList,
         datasets: [
           {
-            label: '直近1週間の人口10万人あたり新規陽性者数',
+            label: this.$t('直近1週間の人口10万人あたり新規陽性者数'),
             data: this.chartData.valList,
             backgroundColor: '#2445b5',
             borderWidth: 0
