@@ -128,7 +128,7 @@ export default {
         lText: this.chartData.valList[
           this.chartData.valList.length - 1
         ].toLocaleString(),
-        sText: '（前日比：' + stext + '）',
+        sText: `（${this.$t('前日比')}：` + stext + '）',
         unit: this.unit
       }
     },
