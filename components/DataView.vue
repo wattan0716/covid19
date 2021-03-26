@@ -30,12 +30,21 @@
         }}</time>
         <a
           v-if="url"
+          rel="license"
+          href="http://creativecommons.org/licenses/by/4.0/"
+          ><img
+            alt="クリエイティブ・コモンズ・ライセンス"
+            style="border-width:0"
+            src="https://i.creativecommons.org/l/by/4.0/80x15.png"
+        /></a>
+        <a
+          v-if="url"
           class="OpenDataLink"
           :href="url"
           target="_blank"
           rel="noopener"
         >
-          オープンデータへのリンク
+          {{ $t('オープンデータへのリンク') }}
           <v-icon class="ExternalLinkIcon" size="15">
             mdi-open-in-new
           </v-icon>

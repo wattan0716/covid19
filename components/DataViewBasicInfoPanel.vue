@@ -25,7 +25,6 @@
     &-summary {
       display: inline-block;
       color: $gray-2;
-      font-family: Hiragino Sans;
       font-style: normal;
       font-size: 30px;
       line-height: 30px;
