@@ -77,7 +77,7 @@
               <div :class="[$style.row, $style['is-gray']]">
                 <span v-text="$t('入院等調整中')" />
                 <span :class="$style.value"
-                  >{{ $t('入院調整中') }}{{ $t('人') }}</span
+                  >{{ 入院調整中 }}{{ $t('人') }}</span
                 >
               </div>
             </li>
