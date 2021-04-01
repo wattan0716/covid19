@@ -207,5 +207,5 @@
   "軽症中等症入院患者数": "Number of mild-moderate symptom inpatients",
   "直近1週間の人口10万人あたり新規陽性者数": "Number of new positive results per 100,000 persons during the previous week",
   "発症日別による陽性者数の推移": "Trend of positive result numbers per occurrence date",
-  "11月15日までは再陽性検査数を除き、11月16日以降は再陽性検査数を含む": "Until November 15: Number of re-tests that turned out positive is NOT included After November 16: Number of re-tests that turned out positive is included"
+  "※11月15日までは再陽性検査数を除き、11月16日以降は再陽性検査数を含む": "Until November 15: Number of re-tests that turned out positive is NOT included After November 16: Number of re-tests that turned out positive is included"
 }
