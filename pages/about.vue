@@ -206,32 +206,21 @@
       {{ $t('詳しくは上記リンクより案内をご覧下さい。') }}<br />
       <br /><br />
       <li>
-        <i18n path="「{aboutWindow}」">
-          <template v-slot:aboutWindow>
-            <a
-              href="https://www.shinsei.pref.osaka.lg.jp/ers/input?tetudukiId=2020050020"
-              target="_blank"
-              rel="noopener"
-            >
-              {{ $t('本サイトの構築に関するお問い合わせについて') }}
-            </a>
-          </template>
-        </i18n>
-      </li>
-      {{
-        $t(
-          '本サイトの構築に関することについては、大阪府スマートシティ戦略部スマートシティ戦略総務課にお問い合わせください。'
-        )
-      }}<br />
-      <br /><br />
-      <li>
         {{ $t('本サイトの掲載内容に関するお問い合わせについて') }}
       </li>
-      {{
-        $t(
-          '本サイトの掲載内容に関することについては、大阪府健康医療部保健医療室感染症対策課にお問い合わせください。'
-        )
-      }}<br />
+      <i18n
+        path="本サイトの掲載内容に関することについては、{department}にお問い合わせください。"
+      >
+        <template v-slot:department>
+          <a
+            href="https://www.shinsei.pref.osaka.lg.jp/ers/input?tetudukiId=2008100051"
+            target="_blank"
+            rel="noopener"
+          >
+            {{ $t('大阪府健康医療部保健医療室') }}
+          </a>
+        </template>
+      </i18n>
     </TextCard>
   </div>
 </template>
